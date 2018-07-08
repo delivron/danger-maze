@@ -26,4 +26,6 @@ namespace app {
         SDL_Window*                 _window;
     };
 
+    void                            loop(Application& application);
+
 }

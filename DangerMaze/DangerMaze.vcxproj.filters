@@ -27,6 +27,9 @@
     <ClCompile Include="app\application.cpp">
       <Filter>Исходные файлы\app</Filter>
     </ClCompile>
+    <ClCompile Include="app\settings.cpp">
+      <Filter>Исходные файлы\app</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="app\application.h">

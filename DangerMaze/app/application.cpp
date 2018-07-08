@@ -60,3 +60,15 @@ void Application::cleanup() {
     SDL_DestroyWindow(_window);
     SDL_Quit();
 }
+
+void app::loop(Application& app) {
+    while (app.isRunning()) {
+        SDL_Event event;
+        while (SDL_PollEvent(&event)) {
+            app.handleEvent(event);
+        }
+
+        app.simulate();
+        app.render();
+    }
+}
