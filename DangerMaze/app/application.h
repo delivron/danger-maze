@@ -6,6 +6,8 @@
 
 #include "settings.h"
 
+#include "../obj/sprite.h"
+
 namespace app {
 
     class Application {
@@ -27,6 +29,7 @@ namespace app {
         bool                        _running;
         SDL_Window*                 _window;
         SDL_Renderer*               _renderer;
+        obj::SpritePtr              _sprite;
     };
 
     void                            loop(Application& application);

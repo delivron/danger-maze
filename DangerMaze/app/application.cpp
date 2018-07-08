@@ -60,6 +60,9 @@ bool Application::initialize(const string& title, const Settings& settings) {
     );
     CHECK_SDL_RESULT(_renderer == nullptr, "SDL_CreateRenderer");
 
+    _sprite = obj::Sprite::createFromPng("default_tile.png", _renderer); // DELETE
+    cout << _sprite->getWidth() << " " << _sprite->getHeight() << endl;
+
     return true;
 }
 
@@ -68,7 +71,9 @@ void Application::simulate() {
 }
 
 void Application::render() {
-
+    SDL_RenderClear(_renderer);
+    SDL_RenderCopy(_renderer, _sprite->getTexture(), nullptr, nullptr);
+    SDL_RenderPresent(_renderer);
 }
 
 void Application::handleEvent(const SDL_Event& event) {
