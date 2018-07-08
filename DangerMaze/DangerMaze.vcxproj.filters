@@ -19,6 +19,12 @@
     <Filter Include="Файлы заголовков\app">
       <UniqueIdentifier>{7ec008ff-d94e-4282-99f8-b8d943b7e96c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Исходные файлы\util">
+      <UniqueIdentifier>{d755dbb0-8ca0-4257-89f6-dab3c21ac8fa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\util">
+      <UniqueIdentifier>{5aa8452e-2c4f-43e3-86fc-61dd99a39d3d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -37,6 +43,9 @@
     </ClInclude>
     <ClInclude Include="app\settings.h">
       <Filter>Файлы заголовков\app</Filter>
+    </ClInclude>
+    <ClInclude Include="util\xml_attribute.h">
+      <Filter>Файлы заголовков\util</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
