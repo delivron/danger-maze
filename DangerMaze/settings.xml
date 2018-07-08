@@ -2,6 +2,6 @@
 <Settings>
   <Display>
 	<Size width="1024" heihgt="768" />
-	<Fullscreen flag="1" />
+	<Fullscreen value="0" />
   </Display>
 </Settings>
