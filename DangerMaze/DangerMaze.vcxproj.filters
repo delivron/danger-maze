@@ -13,10 +13,27 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Исходные файлы\app">
+      <UniqueIdentifier>{eee38851-61a8-4d52-80ab-a8aa5485d2d8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\app">
+      <UniqueIdentifier>{7ec008ff-d94e-4282-99f8-b8d943b7e96c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="app\application.cpp">
+      <Filter>Исходные файлы\app</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="app\application.h">
+      <Filter>Файлы заголовков\app</Filter>
+    </ClInclude>
+    <ClInclude Include="app\settings.h">
+      <Filter>Файлы заголовков\app</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
