@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<Settings>
+  <Display>
+	<Size width="1024" heihgt="768" />
+	<Fullscreen flag="1" />
+  </Display>
+</Settings>
