@@ -1,6 +1,14 @@
 #include <iostream>
 
+#include "SDL_image.h"
+
 #include "application.h"
+
+#define CHECK_SDL_RESULT(condition, functionName)                           \
+if (condition) {                                                            \
+    cout << "Error [" << functionName << "]: " << SDL_GetError() << endl;   \
+    return false;                                                           \
+}
 
 using namespace std;
 using namespace app;
@@ -24,12 +32,12 @@ void Application::setRunning(bool running) noexcept {
 }
 
 bool Application::initialize(const string& title, const Settings& settings) {
-    int initResult = SDL_Init(SDL_INIT_EVERYTHING);
-    if (initResult  < 0) {
-        cout << "Error [SDL_Init]: " << SDL_GetError() << endl;
-        return false;
-    }
+    int sdlInitResult = SDL_Init(SDL_INIT_EVERYTHING);
+    CHECK_SDL_RESULT(sdlInitResult < 0, "SDL_Init");
     
+    int imgInitResult = IMG_Init(IMG_INIT_PNG);
+    CHECK_SDL_RESULT(imgInitResult < 0, "IMG_Init");
+
     _window = SDL_CreateWindow(
         title.c_str(),
         SDL_WINDOWPOS_UNDEFINED,
@@ -38,10 +46,7 @@ bool Application::initialize(const string& title, const Settings& settings) {
         settings.windowHeight,
         SDL_WINDOW_SHOWN
     );
-    if (_window == nullptr) {
-        cout << "Error [SDL_CreateWindow]: " << SDL_GetError() << endl;
-        return false;
-    }
+    CHECK_SDL_RESULT(_window == nullptr, "SDL_CreateWindow");
 
     if (settings.fullscreen) {
         SDL_SetWindowFullscreen(_window, SDL_WINDOW_FULLSCREEN_DESKTOP);
@@ -53,10 +58,7 @@ bool Application::initialize(const string& title, const Settings& settings) {
         SDL_RENDERER_ACCELERATED |  // аппаратное ускорение
         SDL_RENDERER_PRESENTVSYNC   // вертикальная синхронизация
     );
-    if (_renderer == nullptr) {
-        cout << "Error [SDL_CreateRenderer]: " << SDL_GetError() << endl;
-        return false;
-    }
+    CHECK_SDL_RESULT(_renderer == nullptr, "SDL_CreateRenderer");
 
     return true;
 }
@@ -85,11 +87,11 @@ void Application::cleanup() {
     SDL_DestroyWindow(_window);
     SDL_DestroyRenderer(_renderer);
     SDL_Quit();
+    IMG_Quit();
 }
 
 void Application::handleKeyUp(const SDL_Event& event) noexcept {
     SDL_Scancode scancode = event.key.keysym.scancode;
-
     if (scancode == SDL_SCANCODE_ESCAPE) {
         setRunning(false);
     }
