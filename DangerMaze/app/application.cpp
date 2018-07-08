@@ -31,12 +31,16 @@ bool Application::initialize(const string& title, const Settings& settings) {
         title.c_str(),
         SDL_WINDOWPOS_UNDEFINED,
         SDL_WINDOWPOS_UNDEFINED,
-        settings._windowWidth,
-        settings._windowHeight,
+        settings.windowWidth,
+        settings.windowHeight,
         SDL_WINDOW_SHOWN
     );
     if (_window == nullptr) {
         return false;
+    }
+
+    if (settings.fullscreen) {
+        SDL_SetWindowFullscreen(_window, SDL_WINDOW_FULLSCREEN_DESKTOP);
     }
 
     return true;
