@@ -18,7 +18,7 @@ int SDL_main(int argc, char* argv[]) {
         return EXIT_FAILURE;
     }
 
-    app.run();
+    app.setRunning(true);
     loop(app);
 
     return EXIT_SUCCESS;
