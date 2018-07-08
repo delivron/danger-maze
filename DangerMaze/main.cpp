@@ -6,28 +6,20 @@
 using namespace std;
 using namespace app;
 
-const string WINDOW_TITLE = "Danger Maze";
+const string WINDOW_TITLE       = "Danger Maze";
+const string SETTINGS_FILE_PATH = "settings.xml";
 
 int SDL_main(int argc, char* argv[]) {
+    Settings settings = Settings::initializeFromFile(SETTINGS_FILE_PATH);
     Application app;
-    Settings settings;
 
     bool initSuccess = app.initialize(WINDOW_TITLE, settings);
     if (!initSuccess) {
-        return -1;
+        return EXIT_FAILURE;
     }
 
     app.run();
+    loop(app);
 
-    while (app.isRunning()) {
-        SDL_Event event;
-        while (SDL_PollEvent(&event)) {
-            app.handleEvent(event);
-        }
-
-        app.simulate();
-        app.render();
-    }
-
-    return 0;
+    return EXIT_SUCCESS;
 }
