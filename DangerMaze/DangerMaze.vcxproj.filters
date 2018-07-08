@@ -25,6 +25,12 @@
     <Filter Include="Файлы заголовков\util">
       <UniqueIdentifier>{5aa8452e-2c4f-43e3-86fc-61dd99a39d3d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Исходные файлы\obj">
+      <UniqueIdentifier>{e09b1629-732a-4f75-930a-199c62abb887}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\obj">
+      <UniqueIdentifier>{5bb4eee7-4fc3-4d31-8b9d-8d7ba3ff52cc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -36,6 +42,9 @@
     <ClCompile Include="app\settings.cpp">
       <Filter>Исходные файлы\app</Filter>
     </ClCompile>
+    <ClCompile Include="obj\sprite.cpp">
+      <Filter>Исходные файлы\obj</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="app\application.h">
@@ -46,6 +55,9 @@
     </ClInclude>
     <ClInclude Include="util\xml_attribute.h">
       <Filter>Файлы заголовков\util</Filter>
+    </ClInclude>
+    <ClInclude Include="obj\sprite.h">
+      <Filter>Файлы заголовков\obj</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
