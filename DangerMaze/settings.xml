@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <Settings>
   <Display>
-	<Size width="1024" heihgt="768" />
+	<Size width="800" height="600" />
 	<Fullscreen value="0" />
   </Display>
 </Settings>
