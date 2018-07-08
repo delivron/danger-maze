@@ -14,7 +14,7 @@ namespace app {
         ~Application();
 
         bool                        isRunning() const noexcept;
-        void                        run() noexcept;
+        void                        setRunning(bool running) noexcept;
         bool                        initialize(const std::string& title, const Settings& settings);
         void                        simulate();
         void                        render();
@@ -22,8 +22,11 @@ namespace app {
         void                        cleanup();
 
     private:
+        void                        handleKeyUp(const SDL_Event& event) noexcept;
+
         bool                        _running;
         SDL_Window*                 _window;
+        SDL_Renderer*               _renderer;
     };
 
     void                            loop(Application& application);
