@@ -60,8 +60,7 @@ bool Application::initialize(const string& title, const Settings& settings) {
     );
     CHECK_SDL_RESULT(_renderer == nullptr, "SDL_CreateRenderer");
 
-    _sprite = obj::Sprite::createFromPng("default_tile.png", _renderer); // DELETE
-    cout << _sprite->getWidth() << " " << _sprite->getHeight() << endl;
+    _sprite = obj::Sprite::createFromPng("resources/sprites/default_tile.png", _renderer); // DELETE
 
     return true;
 }
@@ -71,8 +70,13 @@ void Application::simulate() {
 }
 
 void Application::render() {
+    SDL_SetRenderDrawColor(_renderer, 155, 221, 255, 255);
+    SDL_Rect rect1 = { 0, 0, 70, 45 };
+    SDL_Rect rect2 = { 70, 0, 70, 45 };
+
     SDL_RenderClear(_renderer);
-    SDL_RenderCopy(_renderer, _sprite->getTexture(), nullptr, nullptr);
+    SDL_RenderCopy(_renderer, _sprite->getTexture(), nullptr, &rect1);
+    SDL_RenderCopy(_renderer, _sprite->getTexture(), nullptr, &rect2);
     SDL_RenderPresent(_renderer);
 }
 
