@@ -13,6 +13,8 @@ if (condition) {                                                            \
 using namespace std;
 using namespace app;
 
+const Uint8 Application::_backgroundColor[4] = { 155, 221, 255, 255 };
+
 Application::Application() noexcept
     : _running(false)
     , _window(nullptr)
@@ -60,8 +62,6 @@ bool Application::initialize(const string& title, const Settings& settings) {
     );
     CHECK_SDL_RESULT(_renderer == nullptr, "SDL_CreateRenderer");
 
-    _sprite = obj::Sprite::createFromPng("resources/sprites/default_tile.png", _renderer); // DELETE
-
     return true;
 }
 
@@ -70,13 +70,16 @@ void Application::simulate() {
 }
 
 void Application::render() {
-    SDL_SetRenderDrawColor(_renderer, 155, 221, 255, 255);
-    SDL_Rect rect1 = { 0, 0, 70, 45 };
-    SDL_Rect rect2 = { 70, 0, 70, 45 };
+    SDL_SetRenderDrawColor(
+        _renderer,
+        _backgroundColor[0],
+        _backgroundColor[1],
+        _backgroundColor[2],
+        _backgroundColor[3]
+    );
 
     SDL_RenderClear(_renderer);
-    SDL_RenderCopy(_renderer, _sprite->getTexture(), nullptr, &rect1);
-    SDL_RenderCopy(_renderer, _sprite->getTexture(), nullptr, &rect2);
+    //SDL_RenderCopy(_renderer, _sprite1->getTexture(), nullptr, &rect1);
     SDL_RenderPresent(_renderer);
 }
 

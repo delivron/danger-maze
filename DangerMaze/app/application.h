@@ -24,12 +24,13 @@ namespace app {
         void                        cleanup();
 
     private:
+        static const Uint8          _backgroundColor[4];
+
         void                        handleKeyUp(const SDL_Event& event) noexcept;
 
         bool                        _running;
         SDL_Window*                 _window;
         SDL_Renderer*               _renderer;
-        obj::SpritePtr              _sprite;
     };
 
     void                            loop(Application& application);
