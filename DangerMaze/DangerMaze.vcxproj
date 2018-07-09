@@ -27,7 +27,9 @@
   <ItemGroup>
     <ClInclude Include="app\application.h" />
     <ClInclude Include="app\settings.h" />
+    <ClInclude Include="obj\field.h" />
     <ClInclude Include="obj\sprite.h" />
+    <ClInclude Include="obj\world.h" />
     <ClInclude Include="util\xml_attribute.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

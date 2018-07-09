@@ -59,5 +59,11 @@
     <ClInclude Include="obj\sprite.h">
       <Filter>Файлы заголовков\obj</Filter>
     </ClInclude>
+    <ClInclude Include="obj\field.h">
+      <Filter>Файлы заголовков\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="obj\world.h">
+      <Filter>Файлы заголовков\obj</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
