@@ -6,7 +6,7 @@
 
 #include "settings.h"
 
-#include "../obj/sprite.h"
+#include "../graph/resource_manager.h"
 
 namespace app {
 
@@ -24,13 +24,14 @@ namespace app {
         void                        cleanup();
 
     private:
-        static const Uint8          _backgroundColor[4];
-
         void                        handleKeyUp(const SDL_Event& event) noexcept;
+
+        static const Uint8          _backgroundColor[4];
 
         bool                        _running;
         SDL_Window*                 _window;
         SDL_Renderer*               _renderer;
+        graph::ResourceManager      _resourceManager;
     };
 
     void                            loop(Application& application);

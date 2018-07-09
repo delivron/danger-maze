@@ -21,14 +21,17 @@
   <ItemGroup>
     <ClCompile Include="app\application.cpp" />
     <ClCompile Include="app\settings.cpp" />
+    <ClCompile Include="graph\resource_manager.cpp" />
+    <ClCompile Include="graph\sprite.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="obj\sprite.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="app\application.h" />
     <ClInclude Include="app\settings.h" />
+    <ClInclude Include="graph\frame.h" />
+    <ClInclude Include="graph\resource_manager.h" />
+    <ClInclude Include="graph\sprite.h" />
     <ClInclude Include="obj\field.h" />
-    <ClInclude Include="obj\sprite.h" />
     <ClInclude Include="obj\world.h" />
     <ClInclude Include="util\xml_attribute.h" />
   </ItemGroup>

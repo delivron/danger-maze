@@ -62,6 +62,8 @@ bool Application::initialize(const string& title, const Settings& settings) {
     );
     CHECK_SDL_RESULT(_renderer == nullptr, "SDL_CreateRenderer");
 
+    _resourceManager.loadSpriteFromDescription("resources/sprites/tiles.xml", _renderer);
+
     return true;
 }
 
@@ -79,7 +81,7 @@ void Application::render() {
     );
 
     SDL_RenderClear(_renderer);
-    //SDL_RenderCopy(_renderer, _sprite1->getTexture(), nullptr, &rect1);
+    // render world
     SDL_RenderPresent(_renderer);
 }
 

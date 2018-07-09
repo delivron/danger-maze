@@ -31,6 +31,12 @@
     <Filter Include="Файлы заголовков\obj">
       <UniqueIdentifier>{5bb4eee7-4fc3-4d31-8b9d-8d7ba3ff52cc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Файлы заголовков\graph">
+      <UniqueIdentifier>{21cea8d5-7a2a-42da-85e7-a87ff2afaf0b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\graph">
+      <UniqueIdentifier>{3cbdcf84-bc49-47f5-8690-1accdec5f6b6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -42,8 +48,11 @@
     <ClCompile Include="app\settings.cpp">
       <Filter>Исходные файлы\app</Filter>
     </ClCompile>
-    <ClCompile Include="obj\sprite.cpp">
-      <Filter>Исходные файлы\obj</Filter>
+    <ClCompile Include="graph\sprite.cpp">
+      <Filter>Исходные файлы\graph</Filter>
+    </ClCompile>
+    <ClCompile Include="graph\resource_manager.cpp">
+      <Filter>Исходные файлы\graph</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -56,14 +65,20 @@
     <ClInclude Include="util\xml_attribute.h">
       <Filter>Файлы заголовков\util</Filter>
     </ClInclude>
-    <ClInclude Include="obj\sprite.h">
-      <Filter>Файлы заголовков\obj</Filter>
-    </ClInclude>
     <ClInclude Include="obj\field.h">
       <Filter>Файлы заголовков\obj</Filter>
     </ClInclude>
     <ClInclude Include="obj\world.h">
       <Filter>Файлы заголовков\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="graph\resource_manager.h">
+      <Filter>Файлы заголовков\graph</Filter>
+    </ClInclude>
+    <ClInclude Include="graph\sprite.h">
+      <Filter>Файлы заголовков\graph</Filter>
+    </ClInclude>
+    <ClInclude Include="graph\frame.h">
+      <Filter>Файлы заголовков\graph</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
