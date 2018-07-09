@@ -1,28 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with TexturePacker https://www.codeandweb.com/texturepacker -->
-<!-- $TexturePacker:SmartUpdate:28433682501c129cda5e217be3139665:4b18e14ca9137115bf96c3ebf5b46235:8c35c81d6c02a4e8a52d04a540c911af$ -->
-<!--Format:
-n  => name of the sprite
-x  => sprite x pos in texture
-y  => sprite y pos in texture
-w  => sprite width (may be trimmed)
-h  => sprite height (may be trimmed)
-pX => x pos of the pivot point (relative to sprite width)
-pY => y pos of the pivot point (relative to sprite height)
-oX => sprite's x-corner offset (only available if trimmed)
-oY => sprite's y-corner offset (only available if trimmed)
-oW => sprite's original width (only available if trimmed)
-oH => sprite's original height (only available if trimmed)
-r => 'y' only set if sprite is rotated
-with polygon mode enabled:
-vertices   => points in sprite coordinate system (x0,y0,x1,y1,x2,y2, ...)
-verticesUV => points in sheet coordinate system (x0,y0,x1,y1,x2,y2, ...)
-triangles  => sprite triangulation, 3 vertex indices per triangle
--->
-<TextureAtlas imagePath="tiles.png" width="356" height="83">
-    <sprite n="1_tile_finish.png" x="1" y="1" w="70" h="81" pX="0.5" pY="0.5"/>
-    <sprite n="2_tile_default.png" x="72" y="1" w="70" h="81" pX="0.5" pY="0.5"/>
-    <sprite n="3_wall_small.png" x="143" y="1" w="70" h="81" pX="0.5" pY="0.5"/>
-    <sprite n="4_wall_big.png" x="214" y="1" w="70" h="81" pX="0.5" pY="0.5"/>
-    <sprite n="5_wall_big_transparent.png" x="285" y="1" w="70" h="81" pX="0.5" pY="0.5"/>
+<TextureAtlas imagePath="resources/sprites/tiles.png">
+  <Sprite name="tile_finish" x="1" y="1" w="70" h="81" />
+  <Sprite name="tile_default" x="72" y="1" w="70" h="81" />
+  <Sprite name="wall_small" x="143" y="1" w="70" h="81" />
+  <Sprite name="wall_big" x="214" y="1" w="70" h="81" />
+  <Sprite name="wall_big_transparent" x="285" y="1" w="70" h="81" />
 </TextureAtlas>
