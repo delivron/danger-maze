@@ -6,7 +6,11 @@
 
 #include "settings.h"
 
-#include "../graph/resource_manager.h"
+#include "../object/field.h"
+#include "../object/camera.h"
+
+#include "../media/render_manager.h"
+#include "../media/resource_manager.h"
 
 namespace app {
 
@@ -18,20 +22,27 @@ namespace app {
         bool                        isRunning() const noexcept;
         void                        setRunning(bool running) noexcept;
         bool                        initialize(const std::string& title, const Settings& settings);
-        void                        simulate();
+        void                        update();
         void                        render();
         void                        handleEvent(const SDL_Event& event);
         void                        cleanup();
 
     private:
         void                        handleKeyUp(const SDL_Event& event) noexcept;
-
-        static const Uint8          _backgroundColor[4];
+        void                        handleMouseMotion(const SDL_Event& event) noexcept;
+        void                        handleMouseButton(const SDL_Event& event) noexcept;
+        object::FieldPtr            generateField(uint32_t width, uint32_t height) const;
 
         bool                        _running;
+        bool                        _mouseControl;
         SDL_Window*                 _window;
-        SDL_Renderer*               _renderer;
-        graph::ResourceManager      _resourceManager;
+        media::ResourceManager      _resourceManager;
+        media::RenderManager        _renderManager;
+        object::CameraPtr           _camera;
+        object::FieldPtr            _field;
+
+        static const SDL_Color                  BACKGROUND_COLOR;
+        static const object::TileDescription    TILE_DESCRIPTION;
     };
 
     void                            loop(Application& application);

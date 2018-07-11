@@ -12,12 +12,24 @@ if (condition) {                                                            \
 
 using namespace std;
 using namespace app;
+using namespace media;
+using namespace object;
 
-const Uint8 Application::_backgroundColor[4] = { 155, 221, 255, 255 };
+const SDL_Color Application::BACKGROUND_COLOR = { 155, 221, 255, 255 };
+
+const TileDescription Application::TILE_DESCRIPTION = {
+    70, // spriteWidth
+    81, // spriteHeight
+    35, // halfHorizontalDiag
+    20, // halfVerticalDiag
+    35, // tileX
+    55, // tileY
+};
 
 Application::Application() noexcept
     : _running(false)
     , _window(nullptr)
+    , _field(nullptr)
 {
 }
 
@@ -36,7 +48,7 @@ void Application::setRunning(bool running) noexcept {
 bool Application::initialize(const string& title, const Settings& settings) {
     int sdlInitResult = SDL_Init(SDL_INIT_EVERYTHING);
     CHECK_SDL_RESULT(sdlInitResult < 0, "SDL_Init");
-    
+
     int imgInitResult = IMG_Init(IMG_INIT_PNG);
     CHECK_SDL_RESULT(imgInitResult < 0, "IMG_Init");
 
@@ -44,45 +56,57 @@ bool Application::initialize(const string& title, const Settings& settings) {
         title.c_str(),
         SDL_WINDOWPOS_UNDEFINED,
         SDL_WINDOWPOS_UNDEFINED,
-        settings.windowWidth,
-        settings.windowHeight,
+        settings.display.width,
+        settings.display.height,
         SDL_WINDOW_SHOWN
     );
     CHECK_SDL_RESULT(_window == nullptr, "SDL_CreateWindow");
 
-    if (settings.fullscreen) {
+    if (settings.display.fullscreen) {
         SDL_SetWindowFullscreen(_window, SDL_WINDOW_FULLSCREEN_DESKTOP);
     }
-    
-    _renderer = SDL_CreateRenderer(
-        _window,
-        -1,                         // выбрать драйвер для рендеринга автоматически
-        SDL_RENDERER_ACCELERATED |  // аппаратное ускорение
-        SDL_RENDERER_PRESENTVSYNC   // вертикальная синхронизация
-    );
-    CHECK_SDL_RESULT(_renderer == nullptr, "SDL_CreateRenderer");
 
-    _resourceManager.loadSpriteFromDescription("resources/sprites/tiles.xml", _renderer);
+    _renderManager = RenderManager(_window);
+    _renderManager.setColor(BACKGROUND_COLOR);
+
+    SDL_Renderer* renderer = _renderManager.getRenderer();
+    CHECK_SDL_RESULT(renderer == nullptr, "SDL_CreateRenderer");
+
+    _resourceManager.loadSpriteFromDescription("sprites/tiles.xml", renderer);
+
+    _field = generateField(settings.world.width, settings.world.height);
+
+    _camera = make_shared<Camera>(
+        settings.display.width,
+        settings.display.height,
+        generateVisibleRect(_field, settings.display.width, settings.display.height)
+    );
 
     return true;
 }
 
-void Application::simulate() {
+void Application::update() {
 
 }
 
 void Application::render() {
-    SDL_SetRenderDrawColor(
-        _renderer,
-        _backgroundColor[0],
-        _backgroundColor[1],
-        _backgroundColor[2],
-        _backgroundColor[3]
-    );
+    const TileMatrix& tiles = _field->getTiles();
+    int priority = 0;
 
-    SDL_RenderClear(_renderer);
-    // render world
-    SDL_RenderPresent(_renderer);
+    for (const vector<Tile>& row : tiles) {
+        for (const Tile& tile : row) {
+            string spriteName = getTileName(tile.state);
+            SpritePtr sprite = _resourceManager.getSprite(spriteName);
+
+            if (sprite != nullptr) {
+                _renderManager.addToQueue(sprite, tile.isometricCoord, priority);
+            }
+        }
+        ++priority;
+    }
+
+    _renderManager.renderAll(_camera);
+    _renderManager.clearQueue();
 }
 
 void Application::handleEvent(const SDL_Event& event) {
@@ -94,12 +118,22 @@ void Application::handleEvent(const SDL_Event& event) {
     case SDL_KEYUP:
         handleKeyUp(event);
         break;
+
+    case SDL_MOUSEBUTTONDOWN:
+    case SDL_MOUSEBUTTONUP:
+        handleMouseButton(event);
+        break;
+
+    case SDL_MOUSEMOTION:
+        handleMouseMotion(event);
+        break;
     }
 }
 
 void Application::cleanup() {
+    _resourceManager.cleanup();
+
     SDL_DestroyWindow(_window);
-    SDL_DestroyRenderer(_renderer);
     SDL_Quit();
     IMG_Quit();
 }
@@ -111,6 +145,38 @@ void Application::handleKeyUp(const SDL_Event& event) noexcept {
     }
 }
 
+void Application::handleMouseMotion(const SDL_Event& event) noexcept {
+    if (_mouseControl) {
+        _camera->move(event.motion.xrel, event.motion.yrel);
+    }
+}
+
+void Application::handleMouseButton(const SDL_Event& event) noexcept {
+    if (event.button.button == SDL_BUTTON_MIDDLE) {
+        _mouseControl = (event.button.type == SDL_MOUSEBUTTONDOWN);
+    }
+}
+
+FieldPtr Application::generateField(uint32_t width, uint32_t height) const {
+    FieldPtr field = make_shared<Field>(
+        width,
+        height,
+        TILE_DESCRIPTION
+    );
+
+    for (uint32_t column = 0; column < width; ++column) {
+        field->setState(0, column, TileState::WALL_BIG, true);
+        field->setState(height - 1, column, TileState::WALL_BIG, true);
+    }
+
+    for (uint32_t row = 1; row < height; ++row) {
+        field->setState(row, 0, TileState::WALL_BIG, true);
+        field->setState(row, height - 1, TileState::WALL_BIG, true);
+    }
+
+    return field;
+}
+
 void app::loop(Application& app) {
     while (app.isRunning()) {
         SDL_Event event;
@@ -118,7 +184,7 @@ void app::loop(Application& app) {
             app.handleEvent(event);
         }
 
-        app.simulate();
+        app.update();
         app.render();
     }
 }
