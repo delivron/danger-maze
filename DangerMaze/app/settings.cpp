@@ -15,17 +15,26 @@ Settings Settings::initializeFromFile(const std::string& path) {
 
     auto loadSuccess = doc.load_file(path.c_str());
     if (loadSuccess) {
-        xml_node displaySettings = doc.child("Settings").child("Display");
-        
-        xml_node sizeSettings = displaySettings.child("Size");
-        xml_attribute widthAttribute = sizeSettings.attribute("width");
-        xml_attribute heightAttribute = sizeSettings.attribute("height");
-        tryReadXmlAttribute(settings.windowWidth, widthAttribute);
-        tryReadXmlAttribute(settings.windowHeight, heightAttribute);
+        DisplaySettings& disp = settings.display;
+        WorldSettings& world = settings.world;
 
-        xml_attribute fullscreenAttribute =
-            displaySettings.child("Fullscreen").attribute("value");
-        tryReadXmlAttribute<bool>(settings.fullscreen, fullscreenAttribute);
+        xml_node settingsNode = doc.child("Settings");
+
+        xml_node displayNode = settingsNode.child("Display");
+        xml_node displaySizeNode = displayNode.child("Size");
+        xml_node fullscreenNode = displayNode.child("Fullscreen");
+        tryReadXmlAttribute(disp.width, displaySizeNode.attribute("width"));
+        tryReadXmlAttribute(disp.height, displaySizeNode.attribute("height"));
+        tryReadXmlAttribute(disp.fullscreen, fullscreenNode.attribute("value"));
+
+        xml_node worldNode = settingsNode.child("World");
+        xml_node worldSizeNode = worldNode.child("Size");
+        xml_node enemiesNode = worldNode.child("Enemies");
+        xml_node cannonsNode = worldNode.child("Cannons");
+        tryReadXmlAttribute(world.width, worldSizeNode.attribute("width"));
+        tryReadXmlAttribute(world.height, worldSizeNode.attribute("height"));
+        tryReadXmlAttribute(world.enemiesCount, enemiesNode.attribute("count"));
+        tryReadXmlAttribute(world.cannonsCount, cannonsNode.attribute("count"));
     }
 
     return settings;

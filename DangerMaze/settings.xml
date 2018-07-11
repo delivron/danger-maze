@@ -1,7 +1,12 @@
 <?xml version="1.0"?>
 <Settings>
   <Display>
-	<Size width="800" height="600" />
-	<Fullscreen value="0" />
+	  <Size width="800" height="600"/>
+	  <Fullscreen value="0" />
   </Display>
+  <World>
+    <Size width="25" height="25"/>
+    <Enemies count="5"/>
+    <Cannons count="5"/>
+  </World>
 </Settings>
