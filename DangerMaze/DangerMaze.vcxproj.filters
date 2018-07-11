@@ -25,17 +25,20 @@
     <Filter Include="Файлы заголовков\util">
       <UniqueIdentifier>{5aa8452e-2c4f-43e3-86fc-61dd99a39d3d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Исходные файлы\obj">
-      <UniqueIdentifier>{e09b1629-732a-4f75-930a-199c62abb887}</UniqueIdentifier>
+    <Filter Include="Исходные файлы\media">
+      <UniqueIdentifier>{3cbdcf84-bc49-47f5-8690-1accdec5f6b6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Файлы заголовков\obj">
-      <UniqueIdentifier>{5bb4eee7-4fc3-4d31-8b9d-8d7ba3ff52cc}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Файлы заголовков\graph">
+    <Filter Include="Файлы заголовков\media">
       <UniqueIdentifier>{21cea8d5-7a2a-42da-85e7-a87ff2afaf0b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Исходные файлы\graph">
-      <UniqueIdentifier>{3cbdcf84-bc49-47f5-8690-1accdec5f6b6}</UniqueIdentifier>
+    <Filter Include="Исходные файлы\object">
+      <UniqueIdentifier>{e09b1629-732a-4f75-930a-199c62abb887}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\object">
+      <UniqueIdentifier>{5bb4eee7-4fc3-4d31-8b9d-8d7ba3ff52cc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы ресурсов\sprites">
+      <UniqueIdentifier>{e41b216e-cbc8-4c3b-ad5f-992070cb81d7}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -48,11 +51,23 @@
     <ClCompile Include="app\settings.cpp">
       <Filter>Исходные файлы\app</Filter>
     </ClCompile>
-    <ClCompile Include="graph\sprite.cpp">
-      <Filter>Исходные файлы\graph</Filter>
+    <ClCompile Include="media\resource_manager.cpp">
+      <Filter>Исходные файлы\media</Filter>
     </ClCompile>
-    <ClCompile Include="graph\resource_manager.cpp">
-      <Filter>Исходные файлы\graph</Filter>
+    <ClCompile Include="media\sprite.cpp">
+      <Filter>Исходные файлы\media</Filter>
+    </ClCompile>
+    <ClCompile Include="object\camera.cpp">
+      <Filter>Исходные файлы\object</Filter>
+    </ClCompile>
+    <ClCompile Include="media\render_manager.cpp">
+      <Filter>Исходные файлы\media</Filter>
+    </ClCompile>
+    <ClCompile Include="util\transformation.cpp">
+      <Filter>Исходные файлы\util</Filter>
+    </ClCompile>
+    <ClCompile Include="object\field.cpp">
+      <Filter>Исходные файлы\object</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -65,20 +80,34 @@
     <ClInclude Include="util\xml_attribute.h">
       <Filter>Файлы заголовков\util</Filter>
     </ClInclude>
-    <ClInclude Include="obj\field.h">
-      <Filter>Файлы заголовков\obj</Filter>
+    <ClInclude Include="media\frame.h">
+      <Filter>Файлы заголовков\media</Filter>
     </ClInclude>
-    <ClInclude Include="obj\world.h">
-      <Filter>Файлы заголовков\obj</Filter>
+    <ClInclude Include="media\resource_manager.h">
+      <Filter>Файлы заголовков\media</Filter>
     </ClInclude>
-    <ClInclude Include="graph\resource_manager.h">
-      <Filter>Файлы заголовков\graph</Filter>
+    <ClInclude Include="media\sprite.h">
+      <Filter>Файлы заголовков\media</Filter>
     </ClInclude>
-    <ClInclude Include="graph\sprite.h">
-      <Filter>Файлы заголовков\graph</Filter>
+    <ClInclude Include="object\camera.h">
+      <Filter>Файлы заголовков\object</Filter>
     </ClInclude>
-    <ClInclude Include="graph\frame.h">
-      <Filter>Файлы заголовков\graph</Filter>
+    <ClInclude Include="media\render_manager.h">
+      <Filter>Файлы заголовков\media</Filter>
     </ClInclude>
+    <ClInclude Include="util\transformation.h">
+      <Filter>Файлы заголовков\util</Filter>
+    </ClInclude>
+    <ClInclude Include="object\field.h">
+      <Filter>Файлы заголовков\object</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="settings.xml">
+      <Filter>Файлы ресурсов</Filter>
+    </Xml>
+    <Xml Include="sprites\tiles.xml">
+      <Filter>Файлы ресурсов\sprites</Filter>
+    </Xml>
   </ItemGroup>
 </Project>
