@@ -98,39 +98,9 @@ void Application::update() {
 }
 
 void Application::render() {
-    const TileMatrix& tiles = _field->getTiles();
-    int width = _field->getWidth();
-    int height = _field->getHeight();
-
-    // рендеринг игроврго поля
-    for (int i = 0; i < height; ++i) {
-        const vector<Tile> row = tiles[i];
-
-        for (int j = 0; j < width; ++j) {
-            const Tile& tile = row[j];
-            string spriteName = getTileName(tile.state);
-            SpritePtr sprite = _resourceManager.getSprite(spriteName);
-
-            if (sprite != nullptr) {
-                int priority = _field->getPriority(i, j);
-                _renderManager.addToQueue(sprite, tile.isometricCoord, priority);
-            }
-        }
-    }
-
-    // показать курсор
-    int row = _currentRowCol.first;
-    int col = _currentRowCol.second;
-    bool isCorrectPosition = _field->isCorrectPosition(row, col);
-
-    if (isCorrectPosition && _field->isWalkable(row, col)) {
-        SpritePtr cursorSprite = _resourceManager.getSprite("cursor");
-        Coordinate addCoord = _field->getIsometricCoord(row, col);
-        int priority = _field->getPriority(row, col);
-
-        _renderManager.addToQueue(cursorSprite, convertToSdlPoint(addCoord), priority + 1);
-    }
-
+    showField();
+    showCursor();
+    
     _renderManager.renderAll(_camera);
 }
 
@@ -221,6 +191,42 @@ FieldPtr Application::generateField(uint32_t width, uint32_t height) const {
     }
 
     return field;
+}
+
+void Application::showField() {
+    const TileMatrix& tiles = _field->getTiles();
+    int width = _field->getWidth();
+    int height = _field->getHeight();
+
+    // рендеринг игрового поля
+    for (int i = 0; i < height; ++i) {
+        const vector<Tile> row = tiles[i];
+
+        for (int j = 0; j < width; ++j) {
+            const Tile& tile = row[j];
+            string spriteName = getTileName(tile.state);
+            SpritePtr sprite = _resourceManager.getSprite(spriteName);
+
+            if (sprite != nullptr) {
+                int priority = _field->getPriority(i, j);
+                _renderManager.addToQueue(sprite, tile.isometricCoord, priority);
+            }
+        }
+    }
+}
+
+void Application::showCursor() {
+    int row = _currentRowCol.first;
+    int col = _currentRowCol.second;
+    bool isCorrectPosition = _field->isCorrectPosition(row, col);
+
+    if (isCorrectPosition && _field->isWalkable(row, col)) {
+        SpritePtr cursorSprite = _resourceManager.getSprite("cursor");
+        Coordinate addCoord = _field->getIsometricCoord(row, col);
+        int priority = _field->getPriority(row, col);
+
+        _renderManager.addToQueue(cursorSprite, convertToSdlPoint(addCoord), priority + 1);
+    }
 }
 
 void app::loop(Application& app) {

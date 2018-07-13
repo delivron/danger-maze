@@ -32,6 +32,8 @@ namespace app {
         void                        handleMouseMotion(const SDL_Event& event) noexcept;
         void                        handleMouseButton(const SDL_Event& event) noexcept;
         object::FieldPtr            generateField(uint32_t width, uint32_t height) const;
+        void                        showField();
+        void                        showCursor();
 
         bool                        _running;
         bool                        _mouseControl;
