@@ -33,7 +33,7 @@ void ResourceManager::loadSpriteFromDescription(const std::string& path, SDL_Ren
     string imagePath = textureAtlasNode.attribute("imagePath").value();
     SDL_Surface* pngImage = IMG_Load(imagePath.c_str());
     if (pngImage == nullptr) {
-        cout << "Error [IMG_Load]: " + path << endl;
+        cout << "Error [IMG_Load]: " + imagePath << endl;
         return;
     }
 
