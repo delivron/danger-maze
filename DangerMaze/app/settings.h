@@ -4,6 +4,8 @@
 
 namespace app {
 
+    const int                       MIN_WORLD_SIZE      = 10;
+
     struct DisplaySettings {
         int                         width               = 1024;
         int                         height              = 768;

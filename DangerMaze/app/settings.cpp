@@ -35,6 +35,13 @@ Settings Settings::initializeFromFile(const std::string& path) {
         tryReadXmlAttribute(world.height, worldSizeNode.attribute("height"));
         tryReadXmlAttribute(world.enemiesCount, enemiesNode.attribute("count"));
         tryReadXmlAttribute(world.cannonsCount, cannonsNode.attribute("count"));
+
+        if (world.width < MIN_WORLD_SIZE) {
+            world.width = MIN_WORLD_SIZE;
+        }
+        if (world.height < MIN_WORLD_SIZE) {
+            world.height = MIN_WORLD_SIZE;
+        }
     }
 
     return settings;
