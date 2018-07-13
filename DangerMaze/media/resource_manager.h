@@ -14,8 +14,8 @@ namespace media {
 
     class ResourceManager {
     public:
-        void                        loadSpriteFromDescription(const std::string& path, SDL_Renderer* renderer);
-        void                        loadAnimationFromDescription(const std::string& path, SDL_Renderer* renderer);
+        void                        loadSpriteFromDescription(const std::string& xmlPath, SDL_Renderer* renderer);
+        void                        loadAnimationFromDescription(const std::string& xmlPath, SDL_Renderer* renderer);
         SpritePtr                   getSprite(const std::string& name) const;
         AnimationPtr                getAnimation(const std::string& name) const;
         void                        cleanup();

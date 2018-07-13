@@ -1,4 +1,5 @@
 #include <iostream>
+#include <experimental/filesystem>
 
 #include "SDL_image.h"
 #include "pugixml.hpp"
@@ -11,6 +12,7 @@ using namespace std;
 using namespace pugi;
 using namespace util;
 using namespace media;
+using namespace experimental::filesystem;
 
 SDL_Rect generateRectangle(const xml_node& node) {
     SDL_Rect rectangle = { 0, 0, 0, 0 };
@@ -21,15 +23,18 @@ SDL_Rect generateRectangle(const xml_node& node) {
     return rectangle;
 }
 
-void ResourceManager::loadSpriteFromDescription(const string& path, SDL_Renderer* renderer) {
-    loadSprites(path, renderer, [&](const string& name, SpritePtr sprite) {
+void ResourceManager::loadSpriteFromDescription(const string& xmlPath, SDL_Renderer* renderer) {
+    loadSprites(xmlPath, renderer, [&](const string& name, SpritePtr sprite) {
         _nameToSprite[name] = sprite;
     });
 }
 
-void ResourceManager::loadAnimationFromDescription(const string& path, SDL_Renderer* renderer) {
-    loadSprites(path, renderer, [&](const string& name, SpritePtr sprite) {
-        _nameToSprites[name].push_back(sprite);
+void ResourceManager::loadAnimationFromDescription(const string& xmlPath, SDL_Renderer* renderer) {
+    path path = xmlPath;
+    string animationName = path.stem().string();
+
+    loadSprites(xmlPath, renderer, [&](const string&, SpritePtr sprite) {
+        _nameToSprites[animationName].push_back(sprite);
     });
 }
 
@@ -38,10 +43,11 @@ SpritePtr ResourceManager::getSprite(const string& name) const {
 }
 
 AnimationPtr ResourceManager::getAnimation(const string& name) const {
-    Sprites sprites;
     if (_nameToSprites.count(name) == 0) {
-        sprites = _nameToSprites.at(name);
+        return nullptr;
     }
+
+    const Sprites& sprites = _nameToSprites.at(name);
     return make_shared<Animation>(sprites);
 }
 
