@@ -5,7 +5,7 @@
 	  <Fullscreen value="0" />
   </Display>
   <World>
-    <Size width="25" height="25"/>
+    <Size width="30" height="30"/>
     <Enemies count="5"/>
     <Cannons count="5"/>
   </World>
