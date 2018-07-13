@@ -39,6 +39,7 @@ bool Animation::isRunning() const noexcept {
 }
 
 void Animation::play() noexcept {
+    _updateTimeMs = clock();
     _running = true;
 }
 
@@ -57,6 +58,10 @@ void Animation::goToAndPlay(uint32_t frame) noexcept {
 }
 
 void Animation::update() noexcept {
+    if (!_running) {
+        return;
+    }
+
     clock_t currentTime = clock();
     clock_t deltaTime = currentTime - _updateTimeMs;
 
