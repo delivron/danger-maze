@@ -40,6 +40,7 @@ namespace app {
         media::RenderManager        _renderManager;
         object::CameraPtr           _camera;
         object::FieldPtr            _field;
+        std::pair<int, int>         _currentRowCol;
 
         static const SDL_Color                  BACKGROUND_COLOR;
         static const object::TileDescription    TILE_DESCRIPTION;

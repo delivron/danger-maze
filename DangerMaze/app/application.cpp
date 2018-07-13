@@ -12,6 +12,7 @@ if (condition) {                                                            \
 
 using namespace std;
 using namespace app;
+using namespace util;
 using namespace media;
 using namespace object;
 
@@ -30,6 +31,7 @@ Application::Application() noexcept
     : _running(false)
     , _window(nullptr)
     , _field(nullptr)
+    , _currentRowCol({-1, -1})
 {
 }
 
@@ -46,7 +48,7 @@ void Application::setRunning(bool running) noexcept {
 }
 
 bool Application::initialize(const string& title, const Settings& settings) {
-    int sdlInitResult = SDL_Init(SDL_INIT_EVERYTHING);
+    int sdlInitResult = SDL_Init(SDL_INIT_VIDEO);
     CHECK_SDL_RESULT(sdlInitResult < 0, "SDL_Init");
 
     int imgInitResult = IMG_Init(IMG_INIT_PNG);
@@ -82,6 +84,12 @@ bool Application::initialize(const string& title, const Settings& settings) {
         generateVisibleRect(_field, settings.display.width, settings.display.height)
     );
 
+    // новая позиция камеры, что бы указанная точка была по центру окна
+    SDL_Point cameraPosition = convertToSdlPoint( _field->getIsometricCoord(0, 0) );
+    cameraPosition.x -= settings.display.width / 2 - TILE_DESCRIPTION.halfHorizontalDiag;
+    cameraPosition.y -= settings.display.height / 2 - TILE_DESCRIPTION.tileY;
+    _camera->setPosition(cameraPosition);
+
     return true;
 }
 
@@ -91,22 +99,39 @@ void Application::update() {
 
 void Application::render() {
     const TileMatrix& tiles = _field->getTiles();
-    int priority = 0;
+    int width = _field->getWidth();
+    int height = _field->getHeight();
 
-    for (const vector<Tile>& row : tiles) {
-        for (const Tile& tile : row) {
+    // рендеринг игроврго поля
+    for (int i = 0; i < height; ++i) {
+        const vector<Tile> row = tiles[i];
+
+        for (int j = 0; j < width; ++j) {
+            const Tile& tile = row[j];
             string spriteName = getTileName(tile.state);
             SpritePtr sprite = _resourceManager.getSprite(spriteName);
 
             if (sprite != nullptr) {
+                int priority = _field->getPriority(i, j);
                 _renderManager.addToQueue(sprite, tile.isometricCoord, priority);
             }
         }
-        ++priority;
+    }
+
+    // показать курсор
+    int row = _currentRowCol.first;
+    int col = _currentRowCol.second;
+    bool isCorrectPosition = _field->isCorrectPosition(row, col);
+
+    if (isCorrectPosition && _field->isWalkable(row, col)) {
+        SpritePtr cursorSprite = _resourceManager.getSprite("cursor");
+        Coordinate addCoord = _field->getIsometricCoord(row, col);
+        int priority = _field->getPriority(row, col);
+
+        _renderManager.addToQueue(cursorSprite, convertToSdlPoint(addCoord), priority + 1);
     }
 
     _renderManager.renderAll(_camera);
-    _renderManager.clearQueue();
 }
 
 void Application::handleEvent(const SDL_Event& event) {
@@ -149,11 +174,30 @@ void Application::handleMouseMotion(const SDL_Event& event) noexcept {
     if (_mouseControl) {
         _camera->move(event.motion.xrel, event.motion.yrel);
     }
+    _currentRowCol = _field->getRowCol(event.motion.x, event.motion.y, _camera);
 }
 
 void Application::handleMouseButton(const SDL_Event& event) noexcept {
+    bool isButtonDown = (event.button.type == SDL_MOUSEBUTTONDOWN);
+
     if (event.button.button == SDL_BUTTON_MIDDLE) {
-        _mouseControl = (event.button.type == SDL_MOUSEBUTTONDOWN);
+        _mouseControl = isButtonDown;
+    }
+    else if (event.button.button == SDL_BUTTON_RIGHT && isButtonDown) {
+        int row = _currentRowCol.first;
+        int col = _currentRowCol.second;
+
+        if (_field->isCorrectPosition(row, col)) {
+            if (_field->getState(row, col) == TileState::DEFAULT) {
+                _field->setState(row, col, TileState::WALL_DEFAULT);
+            }
+            else if (_field->getState(row, col) == TileState::WALL_DEFAULT) {
+                _field->setState(row, col, TileState::DEFAULT);
+            }
+        }
+    }
+    else if (event.button.button == SDL_BUTTON_LEFT && isButtonDown) {
+        // go to point
     }
 }
 
@@ -164,14 +208,16 @@ FieldPtr Application::generateField(uint32_t width, uint32_t height) const {
         TILE_DESCRIPTION
     );
 
+    field->setState(1, 1, TileState::FINISH);
+
     for (uint32_t column = 0; column < width; ++column) {
-        field->setState(0, column, TileState::WALL_BIG, true);
-        field->setState(height - 1, column, TileState::WALL_BIG, true);
+        field->setState(0, column, TileState::WALL_BORDER);
+        field->setState(height - 1, column, TileState::WALL_BORDER);
     }
 
-    for (uint32_t row = 1; row < height; ++row) {
-        field->setState(row, 0, TileState::WALL_BIG, true);
-        field->setState(row, height - 1, TileState::WALL_BIG, true);
+    for (uint32_t row = 1; row < height - 1; ++row) {
+        field->setState(row, 0, TileState::WALL_BORDER);
+        field->setState(row, width - 1, TileState::WALL_BORDER);
     }
 
     return field;
