@@ -3,10 +3,12 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <functional>
 
 #include "SDL.h"
 
-#include "frame.h"
+#include "sprite.h"
+#include "animation.h"
 
 namespace media {
 
@@ -15,17 +17,20 @@ namespace media {
         void                        loadSpriteFromDescription(const std::string& path, SDL_Renderer* renderer);
         void                        loadAnimationFromDescription(const std::string& path, SDL_Renderer* renderer);
         SpritePtr                   getSprite(const std::string& name) const;
-        //AnimationPtr                getAnimation(const std::string& name) const;
+        AnimationPtr                getAnimation(const std::string& name) const;
         void                        cleanup();
-        
+
     private:
         using Textures              = std::vector<SDL_Texture*>;
         using SpriteByName          = std::map<std::string, SpritePtr>;
-        using FramesByName          = std::map<std::string, std::vector<Frame>>;
+        using SpritesByName         = std::map<std::string, Sprites>;
+        using SpriteHandler         = std::function<void(const std::string&, SpritePtr)>;
+
+        void                        loadSprites(const std::string& path, SDL_Renderer* renderer, SpriteHandler handler);
 
         Textures                    _textures;
         SpriteByName                _nameToSprite;
-        FramesByName                _nameToFrames;
+        SpritesByName               _nameToSprites;
     };
     
 }
