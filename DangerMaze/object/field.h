@@ -4,8 +4,11 @@
 #include <string>
 #include <vector>
 #include <cstdint>
+#include <utility>
 
 #include "../media/sprite.h"
+
+#include "../object/camera.h"
 
 #include "../util/transformation.h"
 
@@ -14,11 +17,8 @@ namespace object {
     enum class TileState {
         DEFAULT,
         FINISH,
-        WALL_SMALL,
-        WALL_BIG,
-        WALL_BIG_ALPHA,
-        WALL_BIG_ALPHA_LEFT,  // левая боковая часть прозрачная, а правая нет
-        WALL_BIG_ALPHA_RIGHT, // правая боковая часть прозрачная, а левая нет
+        WALL_BORDER,
+        WALL_DEFAULT
     };
     
     struct Tile {
@@ -52,17 +52,17 @@ namespace object {
         TileDescription             getTileDescription() const noexcept;
         int                         getWidth() const noexcept;
         int                         getHeight() const noexcept;
+        int                         getPriority(int row, int column) const noexcept;
         util::Coordinate            getIsometricCoord(const util::Coordinate& cartesianCoord) const noexcept;
         util::Coordinate            getIsometricCoord(int row, int column) const noexcept;
         util::Coordinate            getCartesianCoord(const util::Coordinate& isometricCoord) const noexcept;
         util::Coordinate            getCartesianCoord(int row, int column) const noexcept;
+        std::pair<int, int>         getRowCol(int x, int y, CameraPtr camera) const noexcept;
         const TileMatrix&           getTiles() const noexcept;
         TileState                   getState(int row, int column) const;
-
-        // Установить состояние клетки на newState по координатам (row, col).
-        // Усли параметр checkOverlaping включён, то стены,
-        // которые перекрывают плитки для хождения, становятся прозрачными
-        void                        setState(int row, int col, TileState newState, bool checkOverlaping = false);
+        bool                        isCorrectPosition(int row, int column) const;
+        bool                        isWalkable(int row, int column) const;
+        void                        setState(int row, int col, TileState newState);
 
     private:
         TransformationParameters    _transformParams;
@@ -73,5 +73,6 @@ namespace object {
     using FieldPtr                  = std::shared_ptr<Field>;
 
     std::string                     getTileName(TileState state);
+    SDL_Rect                        generateVisibleRect(const FieldPtr field, int windowWidth, int windowHeight);
 
 }

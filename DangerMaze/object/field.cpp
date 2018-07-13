@@ -16,8 +16,7 @@ Field::Field(uint32_t width, uint32_t height, const TileDescription& tileDescrip
         / _tileDescription.halfHorizontalDiag;
 
     _transformParams.squareSize = sqrtf(
-        powf(static_cast<float>(_tileDescription.halfHorizontalDiag), 2.0f)
-        + powf(static_cast<float>(_tileDescription.halfVerticalDiag), 2.0f)
+        0.5f * powf(static_cast<float>(2.0f * _tileDescription.halfHorizontalDiag), 2.0f)
     );
 
     _tiles.assign(height, vector<Tile>(width));
@@ -25,7 +24,11 @@ Field::Field(uint32_t width, uint32_t height, const TileDescription& tileDescrip
     for (size_t i = 0; i < _tiles.size(); ++i) {
         vector<Tile>& row = _tiles[i];
         for (size_t j = 0; j < row.size(); ++j) {
-            row[j].isometricCoord = convertToSdlPoint( getIsometricCoord(i, j) );
+            Coordinate spriteCoord = getIsometricCoord(
+                static_cast<int>(i),
+                static_cast<int>(j)
+            );
+            row[j].isometricCoord = convertToSdlPoint(spriteCoord);
         }
     }
 }
@@ -40,6 +43,11 @@ int Field::getWidth()const noexcept {
 
 int Field::getHeight()const noexcept {
     return static_cast<int>(_tiles.size());
+}
+
+int Field::getPriority(int row, int column) const noexcept {
+    const int PRIORITY_STEP = 10;
+    return PRIORITY_STEP * (row * getWidth() + column);
 }
 
 Coordinate Field::getIsometricCoord(const Coordinate& cartesianCoord) const noexcept {
@@ -64,9 +72,24 @@ Coordinate Field::getCartesianCoord(const Coordinate& isometricCoord) const noex
 }
 
 Coordinate Field::getCartesianCoord(int row, int column) const noexcept {
-    float x = ((float)column + 0.5f) * _transformParams.squareSize;
-    float y = ((float)row + 0.5f) * _transformParams.squareSize;
+    float x = (static_cast<float>(column) + 0.5f) * _transformParams.squareSize;
+    float y = (static_cast<float>(row) + 0.5f) * _transformParams.squareSize;
     return { x, y };
+}
+
+std::pair<int, int> Field::getRowCol(int x, int y, CameraPtr camera) const noexcept {
+    SDL_Point cameraPoint = camera->getPosition();
+    SDL_Point clickPoint = convertToSdlPoint(
+        getCartesianCoord(Coordinate{
+            static_cast<float>(x + cameraPoint.x),
+            static_cast<float>(y + cameraPoint.y)
+        })
+    );
+
+    return {
+        static_cast<int>(clickPoint.y / _transformParams.squareSize),
+        static_cast<int>(clickPoint.x / _transformParams.squareSize)
+    };
 }
 
 const TileMatrix& Field::getTiles() const noexcept {
@@ -77,28 +100,16 @@ TileState Field::getState(int row, int column) const {
     return _tiles[row][column].state;
 }
 
-void Field::setState(int row, int column, TileState newState, bool checkOverlaping) {
-    if (checkOverlaping && newState == TileState::WALL_BIG) {
-        if (row > 0 && column > 0) {
-            TileState leftUpState = getState(row - 1, column - 1);
-            if (leftUpState == TileState::DEFAULT || leftUpState == TileState::FINISH) {
-                newState = TileState::WALL_BIG_ALPHA;
-            }
-        }
-        else if (row > 0) {
-            TileState upState = getState(row - 1, column);
-            if (upState == TileState::DEFAULT || upState == TileState::FINISH) {
-                newState = TileState::WALL_BIG_ALPHA;
-            }
-        }
-        else if (column > 0) {
-            TileState leftState = getState(row, column - 1);
-            if (leftState == TileState::DEFAULT || leftState == TileState::FINISH) {
-                newState = TileState::WALL_BIG_ALPHA;
-            }
-        }
-    }
+bool Field::isCorrectPosition(int row, int column) const {
+    return row >= 0 && row < getHeight() && column >= 0 && column < getWidth();
+}
 
+bool Field::isWalkable(int row, int column) const {
+    TileState state = _tiles[row][column].state;
+    return state == TileState::DEFAULT || state == TileState::FINISH;
+}
+
+void Field::setState(int row, int column, TileState newState) {
     _tiles[row][column].state = newState;
 }
 
@@ -110,20 +121,24 @@ string object::getTileName(TileState state) {
     case TileState::DEFAULT:
         return "tile_default";
 
-    case TileState::WALL_SMALL:
-        return "wall_small";
+    case TileState::WALL_BORDER:
+        return "wall_border";
 
-    case TileState::WALL_BIG:
-        return "wall_big";
-
-    case TileState::WALL_BIG_ALPHA:
-        return "wall_big_alpha";
-
-    case TileState::WALL_BIG_ALPHA_LEFT:
-        return "wall_big_alpha_left";
-
-    case TileState::WALL_BIG_ALPHA_RIGHT:
-        return "wall_big_alpha_right";
+    case TileState::WALL_DEFAULT:
+        return "wall_default";
     }
     return string{};
+}
+
+SDL_Rect object::generateVisibleRect(const FieldPtr field, int windowWidth, int windowHeight) {
+    TileDescription tileDescr = field->getTileDescription();
+    int fieldLeftX = tileDescr.halfHorizontalDiag * (field->getHeight() - 1);
+
+    return {
+        -fieldLeftX - windowWidth / 2,
+        -windowHeight / 2 + tileDescr.halfVerticalDiag,
+        fieldLeftX + tileDescr.halfHorizontalDiag * (field->getWidth() - 1) + windowWidth,
+        tileDescr.halfVerticalDiag * (field->getHeight() - 1)
+        + tileDescr.halfVerticalDiag * (field->getWidth() - 1) + windowHeight
+    };
 }
