@@ -29,9 +29,10 @@ const TileDescription Application::TILE_DESCRIPTION = {
 
 Application::Application() noexcept
     : _running(false)
+    , _mouseControl(false)
     , _window(nullptr)
+    , _camera(nullptr)
     , _field(nullptr)
-    , _currentRowCol({-1, -1})
 {
 }
 
@@ -75,6 +76,7 @@ bool Application::initialize(const string& title, const Settings& settings) {
     CHECK_SDL_RESULT(renderer == nullptr, "SDL_CreateRenderer");
 
     _resourceManager.loadSpriteFromDescription("sprites/tiles.xml", renderer);
+    _resourceManager.loadAnimationFromDescription("sprites/player.xml", renderer);
 
     _field = generateField(settings.world.width, settings.world.height);
 
@@ -85,7 +87,8 @@ bool Application::initialize(const string& title, const Settings& settings) {
     );
 
     // новая позиция камеры, что бы указанная точка была по центру окна
-    SDL_Point cameraPosition = convertToSdlPoint( _field->getIsometricCoord(0, 0) );
+    Position targetPosition = { 0, 0 };
+    SDL_Point cameraPosition = convertToSdlPoint( _field->getIsometricCoord(targetPosition) );
     cameraPosition.x -= settings.display.width / 2 - TILE_DESCRIPTION.halfHorizontalDiag;
     cameraPosition.y -= settings.display.height / 2 - TILE_DESCRIPTION.tileY;
     _camera->setPosition(cameraPosition);
@@ -100,7 +103,7 @@ void Application::update() {
 void Application::render() {
     showField();
     showCursor();
-    
+
     _renderManager.renderAll(_camera);
 }
 
@@ -144,7 +147,7 @@ void Application::handleMouseMotion(const SDL_Event& event) noexcept {
     if (_mouseControl) {
         _camera->move(event.motion.xrel, event.motion.yrel);
     }
-    _currentRowCol = _field->getRowCol(event.motion.x, event.motion.y, _camera);
+    _currentPos = _field->getRowCol(event.motion.x, event.motion.y, _camera);
 }
 
 void Application::handleMouseButton(const SDL_Event& event) noexcept {
@@ -154,15 +157,12 @@ void Application::handleMouseButton(const SDL_Event& event) noexcept {
         _mouseControl = isButtonDown;
     }
     else if (event.button.button == SDL_BUTTON_RIGHT && isButtonDown) {
-        int row = _currentRowCol.first;
-        int col = _currentRowCol.second;
-
-        if (_field->isCorrectPosition(row, col)) {
-            if (_field->getState(row, col) == TileState::DEFAULT) {
-                _field->setState(row, col, TileState::WALL_DEFAULT);
+        if (_field->isCorrectPosition(_currentPos)) {
+            if (_field->getState(_currentPos) == TileState::DEFAULT) {
+                _field->setState(_currentPos, TileState::WALL_DEFAULT);
             }
-            else if (_field->getState(row, col) == TileState::WALL_DEFAULT) {
-                _field->setState(row, col, TileState::DEFAULT);
+            else if (_field->getState(_currentPos) == TileState::WALL_DEFAULT) {
+                _field->setState(_currentPos, TileState::DEFAULT);
             }
         }
     }
@@ -178,16 +178,19 @@ FieldPtr Application::generateField(uint32_t width, uint32_t height) const {
         TILE_DESCRIPTION
     );
 
-    field->setState(1, 1, TileState::FINISH);
+    field->setState({ 1, 1 }, TileState::FINISH);
 
-    for (uint32_t column = 0; column < width; ++column) {
-        field->setState(0, column, TileState::WALL_BORDER);
-        field->setState(height - 1, column, TileState::WALL_BORDER);
+    int w = static_cast<int>(width);
+    int h = static_cast<int>(height);
+
+    for (int column = 0; column < w; ++column) {
+        field->setState({ 0, column }, TileState::WALL_BORDER);
+        field->setState({ h - 1, column }, TileState::WALL_BORDER);
     }
 
-    for (uint32_t row = 1; row < height - 1; ++row) {
-        field->setState(row, 0, TileState::WALL_BORDER);
-        field->setState(row, width - 1, TileState::WALL_BORDER);
+    for (int row = 1; row < h - 1; ++row) {
+        field->setState({ row, 0 }, TileState::WALL_BORDER);
+        field->setState({ row, w - 1 }, TileState::WALL_BORDER);
     }
 
     return field;
@@ -208,22 +211,20 @@ void Application::showField() {
             SpritePtr sprite = _resourceManager.getSprite(spriteName);
 
             if (sprite != nullptr) {
-                int priority = _field->getPriority(i, j);
-                _renderManager.addToQueue(sprite, tile.isometricCoord, priority);
+                int priority = _field->getPriority({ i, j });
+                _renderManager.addToQueue(sprite, tile.drawPoint, priority);
             }
         }
     }
 }
 
 void Application::showCursor() {
-    int row = _currentRowCol.first;
-    int col = _currentRowCol.second;
-    bool isCorrectPosition = _field->isCorrectPosition(row, col);
+    bool isCorrectPosition = _field->isCorrectPosition(_currentPos);
 
-    if (isCorrectPosition && _field->isWalkable(row, col)) {
+    if (isCorrectPosition && _field->isWalkable(_currentPos)) {
         SpritePtr cursorSprite = _resourceManager.getSprite("cursor");
-        Coordinate addCoord = _field->getIsometricCoord(row, col);
-        int priority = _field->getPriority(row, col);
+        Coordinate addCoord = _field->getIsometricCoord(_currentPos);
+        int priority = _field->getPriority(_currentPos);
 
         _renderManager.addToQueue(cursorSprite, convertToSdlPoint(addCoord), priority + 1);
     }
