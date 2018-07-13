@@ -25,10 +25,9 @@ Field::Field(uint32_t width, uint32_t height, const TileDescription& tileDescrip
         vector<Tile>& row = _tiles[i];
         for (size_t j = 0; j < row.size(); ++j) {
             Coordinate spriteCoord = getIsometricCoord(
-                static_cast<int>(i),
-                static_cast<int>(j)
+                Position{ static_cast<int>(i), static_cast<int>(j) }
             );
-            row[j].isometricCoord = convertToSdlPoint(spriteCoord);
+            row[j].drawPoint = convertToSdlPoint(spriteCoord);
         }
     }
 }
@@ -45,9 +44,9 @@ int Field::getHeight()const noexcept {
     return static_cast<int>(_tiles.size());
 }
 
-int Field::getPriority(int row, int column) const noexcept {
+int Field::getPriority(const Position& pos) const noexcept {
     const int PRIORITY_STEP = 10;
-    return PRIORITY_STEP * (row * getWidth() + column);
+    return PRIORITY_STEP * (pos.row * getWidth() + pos.column);
 }
 
 Coordinate Field::getIsometricCoord(const Coordinate& cartesianCoord) const noexcept {
@@ -57,9 +56,9 @@ Coordinate Field::getIsometricCoord(const Coordinate& cartesianCoord) const noex
     );
 }
 
-Coordinate Field::getIsometricCoord(int row, int column) const noexcept {
-    float isometricX = static_cast<float>(column - row) * _tileDescription.halfHorizontalDiag;
-    float isometricY = static_cast<float>(column + row) * _tileDescription.halfVerticalDiag;
+Coordinate Field::getIsometricCoord(const Position& pos) const noexcept {
+    float isometricX = static_cast<float>(pos.column - pos.row) * _tileDescription.halfHorizontalDiag;
+    float isometricY = static_cast<float>(pos.column + pos.row) * _tileDescription.halfVerticalDiag;
     return {
         isometricX - _tileDescription.tileX,
         isometricY - _tileDescription.tileY + _tileDescription.halfVerticalDiag
@@ -71,13 +70,13 @@ Coordinate Field::getCartesianCoord(const Coordinate& isometricCoord) const noex
     return rotate(scaledCoord, -QUATER_PI);
 }
 
-Coordinate Field::getCartesianCoord(int row, int column) const noexcept {
-    float x = (static_cast<float>(column) + 0.5f) * _transformParams.squareSize;
-    float y = (static_cast<float>(row) + 0.5f) * _transformParams.squareSize;
+Coordinate Field::getCartesianCoord(const Position& pos) const noexcept {
+    float x = (static_cast<float>(pos.column) + 0.5f) * _transformParams.squareSize;
+    float y = (static_cast<float>(pos.row) + 0.5f) * _transformParams.squareSize;
     return { x, y };
 }
 
-std::pair<int, int> Field::getRowCol(int x, int y, CameraPtr camera) const noexcept {
+Position Field::getRowCol(int x, int y, CameraPtr camera) const noexcept {
     SDL_Point cameraPoint = camera->getPosition();
     SDL_Point clickPoint = convertToSdlPoint(
         getCartesianCoord(Coordinate{
@@ -96,21 +95,22 @@ const TileMatrix& Field::getTiles() const noexcept {
     return _tiles;
 }
 
-TileState Field::getState(int row, int column) const {
-    return _tiles[row][column].state;
+TileState Field::getState(const Position& pos) const {
+    return _tiles[pos.row][pos.column].state;
 }
 
-bool Field::isCorrectPosition(int row, int column) const {
-    return row >= 0 && row < getHeight() && column >= 0 && column < getWidth();
+bool Field::isCorrectPosition(const Position& pos) const {
+    return (pos.row >= 0) && (pos.row < getHeight())
+        && (pos.column >= 0) && (pos.column < getWidth());
 }
 
-bool Field::isWalkable(int row, int column) const {
-    TileState state = _tiles[row][column].state;
+bool Field::isWalkable(const Position& pos) const {
+    TileState state = _tiles[pos.row][pos.column].state;
     return state == TileState::DEFAULT || state == TileState::FINISH;
 }
 
-void Field::setState(int row, int column, TileState newState) {
-    _tiles[row][column].state = newState;
+void Field::setState(const Position& pos, TileState newState) {
+    _tiles[pos.row][pos.column].state = newState;
 }
 
 string object::getTileName(TileState state) {

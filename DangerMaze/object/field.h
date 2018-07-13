@@ -4,7 +4,8 @@
 #include <string>
 #include <vector>
 #include <cstdint>
-#include <utility>
+
+#include "position.h"
 
 #include "../media/sprite.h"
 
@@ -23,7 +24,7 @@ namespace object {
     
     struct Tile {
         TileState                   state               = TileState::DEFAULT;
-        SDL_Point                   isometricCoord;
+        SDL_Point                   drawPoint;
     };
 
     struct TileDescription {
@@ -52,17 +53,17 @@ namespace object {
         TileDescription             getTileDescription() const noexcept;
         int                         getWidth() const noexcept;
         int                         getHeight() const noexcept;
-        int                         getPriority(int row, int column) const noexcept;
+        int                         getPriority(const Position& pos) const noexcept;
         util::Coordinate            getIsometricCoord(const util::Coordinate& cartesianCoord) const noexcept;
-        util::Coordinate            getIsometricCoord(int row, int column) const noexcept;
+        util::Coordinate            getIsometricCoord(const Position& pos) const noexcept;
         util::Coordinate            getCartesianCoord(const util::Coordinate& isometricCoord) const noexcept;
-        util::Coordinate            getCartesianCoord(int row, int column) const noexcept;
-        std::pair<int, int>         getRowCol(int x, int y, CameraPtr camera) const noexcept;
+        util::Coordinate            getCartesianCoord(const Position& pos) const noexcept;
+        Position                    getRowCol(int x, int y, CameraPtr camera) const noexcept;
         const TileMatrix&           getTiles() const noexcept;
-        TileState                   getState(int row, int column) const;
-        bool                        isCorrectPosition(int row, int column) const;
-        bool                        isWalkable(int row, int column) const;
-        void                        setState(int row, int col, TileState newState);
+        TileState                   getState(const Position& pos) const;
+        bool                        isCorrectPosition(const Position& pos) const;
+        bool                        isWalkable(const Position& pos) const;
+        void                        setState(const Position& pos, TileState newState);
 
     private:
         TransformationParameters    _transformParams;
