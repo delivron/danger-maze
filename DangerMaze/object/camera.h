@@ -4,8 +4,6 @@
 
 #include "SDL.h"
 
-#include "field.h"
-
 namespace object {
 
     class Camera {
@@ -29,7 +27,5 @@ namespace object {
     };
 
     using CameraPtr                 = std::shared_ptr<Camera>;
-
-    SDL_Rect                        generateVisibleRect(const FieldPtr field, int windowWidth, int windowHeight);
 
 }

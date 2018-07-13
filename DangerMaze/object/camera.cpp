@@ -75,11 +75,3 @@ void Camera::correctVisibleRect() noexcept {
         _visibleRect.y = borderDown - _visibleRect.h;
     }
 }
-
-SDL_Rect object::generateVisibleRect(const FieldPtr field, int windowWidth, int windowHeight) {
-    TileDescription tileDescr = field->getTileDescription();
-    int width = 2 * tileDescr.halfHorizontalDiag * field->getWidth() + windowWidth;
-    int height = 2 * tileDescr.halfVerticalDiag * field->getHeight() + windowHeight;
-
-    return { -width / 2, -windowHeight / 2, width, height };
-}
