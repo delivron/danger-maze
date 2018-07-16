@@ -47,7 +47,7 @@ namespace app {
         void                        handleRightMouseButton() noexcept;
         void                        generateField(uint32_t width, uint32_t height);
         void                        addFieldToPriorityTree(PriorityTree& tree) const;
-        void                        addCursorToPriorityTree(PriorityTree& tree) const;
+        void                        addMarkersToPriorityTree(PriorityTree& tree) const;
         void                        addObjectsToPriorityTree(PriorityTree& tree) const;
         void                        updateLevelState();
 

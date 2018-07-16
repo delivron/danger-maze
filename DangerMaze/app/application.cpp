@@ -157,7 +157,7 @@ void Application::render() {
     PriorityTree priorityTree(width, height);
 
     addFieldToPriorityTree(priorityTree);
-    addCursorToPriorityTree(priorityTree);
+    addMarkersToPriorityTree(priorityTree);
     addObjectsToPriorityTree(priorityTree);
 
     _renderManager.setQueue(priorityTree.getSortedSprites());
@@ -211,7 +211,7 @@ void Application::renderInCenter(const SpritePtr sprite) {
     SDL_Point cameraPoint = _camera->getPosition();
     SDL_Rect spriteRect = sprite->getRectangle();
     int x = (w - spriteRect.w) / 2 + cameraPoint.x;
-    int y = (h - spriteRect.h) / 2 + cameraPoint.x;
+    int y = (h - spriteRect.h) / 2 + cameraPoint.y;
 
     _renderManager.addToQueue(RenderData{ { x, y }, sprite });
 }
@@ -336,7 +336,7 @@ void Application::addFieldToPriorityTree(PriorityTree& tree) const {
     }
 }
 
-void Application::addCursorToPriorityTree(PriorityTree& tree) const {
+void Application::addMarkersToPriorityTree(PriorityTree& tree) const {
     bool isCorrectPosition = _field->isCorrectPosition(_currentPos);
 
     if (isCorrectPosition && _field->isWalkable(_currentPos)) {
@@ -347,6 +347,25 @@ void Application::addCursorToPriorityTree(PriorityTree& tree) const {
             RenderData{ convertToSdlPoint(addCoord), cursorSprite },
             _currentPos
         );
+    }
+
+    if (_player->isMove()) {
+        deque<Direction> path = _player->getPath();
+        path.push_front( _player->getDirection() );
+
+        SpritePtr pointSprite = _resourceManager.getSprite("point");
+        Position currentPos = _player->getBeginPosition();
+
+        for (Direction dir : path) {
+            currentPos = nextPosition(currentPos, dir);
+            
+            Coordinate addCoord = _field->getSpriteCoord(currentPos);
+
+            tree.addSprite(
+                RenderData{ convertToSdlPoint(addCoord), pointSprite },
+                currentPos
+            );
+        }
     }
 }
 
