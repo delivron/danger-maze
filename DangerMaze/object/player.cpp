@@ -1,11 +1,16 @@
 #include "player.h"
 
+using namespace std;
 using namespace object;
 
 Player::Player(media::AnimationPtr animation, float speed)
     : IHero(Fraction::PLAYER, animation, speed)
 {    
     setDirection(Direction::LEFT);
+}
+
+deque<Direction> Player::getPath() const noexcept {
+    return _path;
 }
 
 void Player::setPath(const std::deque<Direction>& path) {
