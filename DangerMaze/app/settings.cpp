@@ -39,8 +39,15 @@ Settings Settings::initializeFromFile(const std::string& path) {
         if (world.width < MIN_WORLD_SIZE) {
             world.width = MIN_WORLD_SIZE;
         }
+        else if (world.width > MAX_WORLD_SIZE) {
+            world.width = MIN_WORLD_SIZE;
+        }
+
         if (world.height < MIN_WORLD_SIZE) {
             world.height = MIN_WORLD_SIZE;
+        }
+        else if (world.height > MAX_WORLD_SIZE) {
+            world.height = MAX_WORLD_SIZE;
         }
     }
 
