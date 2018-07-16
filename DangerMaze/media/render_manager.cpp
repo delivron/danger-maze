@@ -17,9 +17,10 @@ RenderManager::RenderManager(SDL_Window* window) noexcept
 {
     _renderer = SDL_CreateRenderer(
         window,
-        -1,                         // выбрать драйвер для рендеринга автоматически
-        SDL_RENDERER_ACCELERATED |  // аппаратное ускорение
-        SDL_RENDERER_PRESENTVSYNC   // вертикальная синхронизация
+        -1,                             // выбрать драйвер для рендеринга автоматически
+        SDL_RENDERER_ACCELERATED |
+        SDL_RENDERER_PRESENTVSYNC |
+        SDL_RENDERER_TARGETTEXTURE
     );
 }
 
