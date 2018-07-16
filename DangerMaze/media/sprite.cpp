@@ -25,8 +25,8 @@ SDL_Texture* Sprite::getTexture() const noexcept {
     return _texture;
 }
 
-SDL_Rect* Sprite::getRectangle() noexcept {
-    return &_rectangle;
+SDL_Rect Sprite::getRectangle() const noexcept {
+    return _rectangle;
 }
 
 void Sprite::copyTo(SDL_Renderer* renderer, int x, int y) const {

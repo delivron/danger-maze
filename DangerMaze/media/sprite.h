@@ -13,7 +13,7 @@ namespace media {
         Sprite(SDL_Texture* texture, const SDL_Rect& rectangle) noexcept;
         
         SDL_Texture*                getTexture() const noexcept;
-        SDL_Rect*                   getRectangle() noexcept;
+        SDL_Rect                    getRectangle() const noexcept;
         void                        copyTo(SDL_Renderer* renderer, int x = 0, int y = 0) const;
         void                        copyTo(SDL_Renderer* renderer, const SDL_Point& point) const;
 
