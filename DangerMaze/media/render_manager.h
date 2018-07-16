@@ -11,8 +11,8 @@
 namespace media {
 
     struct RenderData {
-        SDL_Point                   point = { 0, 0 };
-        media::SpritePtr            sprite = nullptr;
+        SDL_Point                   point                   = { 0, 0 };
+        media::SpritePtr            sprite                  = nullptr;
     };
 
     class RenderManager {
