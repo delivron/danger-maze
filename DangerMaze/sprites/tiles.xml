@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<TextureAtlas imagePath="sprites/tiles.png">
-  <Sprite name="cursor" x="1" y="1" w="70" h="81"/>
-  <Sprite name="tile_finish" x="72" y="1" w="70" h="81"/>
-  <Sprite name="tile_default" x="143" y="1" w="70" h="81"/>
-  <Sprite name="wall_border" x="214" y="1" w="70" h="81"/>
-  <Sprite name="wall_default" x="285" y="1" w="70" h="81"/>
+<TextureAtlas image-path="sprites/tiles.png">
+  <Sprite name="tile_finish" x="1" y="1" w="70" h="81"/>
+  <Sprite name="tile_default" x="72" y="1" w="70" h="81"/>
+  <Sprite name="wall_border" x="143" y="1" w="70" h="81"/>
+  <Sprite name="wall_default" x="214" y="1" w="70" h="81"/>
 </TextureAtlas>
