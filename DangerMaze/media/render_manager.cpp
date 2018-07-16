@@ -1,11 +1,10 @@
+#include <algorithm>
+
 #include "render_manager.h"
 
 using namespace std;
 using namespace media;
-
-bool media::operator>(const RenderData& lhs, const RenderData& rhs) {
-    return lhs.priority > rhs.priority;
-}
+using namespace object;
 
 RenderManager::RenderManager() noexcept
     : _renderer(nullptr)
@@ -30,7 +29,7 @@ RenderManager::~RenderManager() {
 
 RenderManager::RenderManager(RenderManager&& otherManager) noexcept
     : _renderer(otherManager._renderer)
-    , _priorityQueue(otherManager._priorityQueue)
+    , _queue(otherManager._queue)
     , _color(otherManager._color)
 {
     otherManager._renderer = nullptr;
@@ -38,7 +37,7 @@ RenderManager::RenderManager(RenderManager&& otherManager) noexcept
 
 void RenderManager::operator=(RenderManager&& otherManager) {
     _renderer = otherManager._renderer;
-    _priorityQueue = otherManager._priorityQueue;
+    _queue = otherManager._queue;
     _color = otherManager._color;
     
     otherManager._renderer = nullptr;
@@ -52,8 +51,13 @@ SDL_Renderer* RenderManager::getRenderer() noexcept {
     return _renderer;
 }
 
-void RenderManager::addToQueue(SpritePtr sprite, const SDL_Point& point, int priority) {
-    _priorityQueue.push(RenderData{ priority, point, sprite });
+void RenderManager::addToQueue(const RenderData& renderData) {
+    _queue.push_back(renderData);
+
+}
+
+void RenderManager::setQueue(vector<RenderData>&& spritesInfo) {
+    _queue = move(spritesInfo);
 }
 
 void RenderManager::renderAll(const object::CameraPtr camera) {
@@ -62,16 +66,15 @@ void RenderManager::renderAll(const object::CameraPtr camera) {
 
     SDL_Point cameraPoint = camera->getPosition();
 
-    while (!_priorityQueue.empty()) {
-        const RenderData& top = _priorityQueue.top();
-        SDL_Point renderPoint = top.point;
-
-        renderPoint.x -= cameraPoint.x;
-        renderPoint.y -= cameraPoint.y;
-        top.sprite->copyTo(_renderer, renderPoint);
-
-        _priorityQueue.pop();
+    for (RenderData renderData: _queue) {
+        renderData.point.x -= cameraPoint.x;
+        renderData.point.y -= cameraPoint.y;
+        renderData.sprite->copyTo(_renderer, renderData.point);
     }
 
     SDL_RenderPresent(_renderer);
+}
+
+void RenderManager::clearQueue() {
+    _queue.clear();
 }

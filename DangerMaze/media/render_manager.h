@@ -1,9 +1,6 @@
 #pragma once
 
-#include <queue>
 #include <vector>
-#include <utility>
-#include <functional>
 
 #include "SDL.h"
 
@@ -14,12 +11,9 @@
 namespace media {
 
     struct RenderData {
-        int                         priority;
-        SDL_Point                   point;
-        media::SpritePtr            sprite;
+        SDL_Point                   point = { 0, 0 };
+        media::SpritePtr            sprite = nullptr;
     };
-
-    bool                            operator>(const RenderData& lhs, const RenderData& rhs);
 
     class RenderManager {
     public:
@@ -32,17 +26,15 @@ namespace media {
 
         void                        setColor(const SDL_Color& color);
         SDL_Renderer*               getRenderer() noexcept;
-        void                        addToQueue(SpritePtr sprite, const SDL_Point& point, int priority = 0);
-
-        // Все объекты из очереди выводятся на экран, очередь очищается.
+        void                        setQueue(std::vector<RenderData>&& spritesInfo);
+        void                        addToQueue(const RenderData& renderData);
         void                        renderAll(const object::CameraPtr camera);
+        void                        clearQueue();
 
     private:
-        using PriorityQueue         = std::priority_queue<RenderData, std::vector<RenderData>, std::greater<RenderData>>;
-
         SDL_Renderer*               _renderer;
         SDL_Color                   _color;
-        PriorityQueue               _priorityQueue;
+        std::vector<RenderData>     _queue;
     };
 
 }
