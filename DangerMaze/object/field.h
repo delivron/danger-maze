@@ -10,6 +10,7 @@
 #include "../media/sprite.h"
 
 #include "../object/camera.h"
+#include "../object/dynamic_object.h"
 
 #include "../util/transformation.h"
 
@@ -23,7 +24,12 @@ namespace object {
     };
     
     struct Tile {
+        // В одной клетке могут находиться несколько объектов одной фракции.
+        // В этом случае в поле object будет указатель только на один из них,
+        // так как нет необходимости как-то обрабатывать все объекты клетки.
+
         TileState                   state               = TileState::DEFAULT;
+        IDynamicObjectPtr           object              = nullptr;
         SDL_Point                   drawPoint;
     };
 
@@ -53,17 +59,21 @@ namespace object {
         TileDescription             getTileDescription() const noexcept;
         int                         getWidth() const noexcept;
         int                         getHeight() const noexcept;
-        int                         getPriority(const Position& pos) const noexcept;
-        util::Coordinate            getIsometricCoord(const util::Coordinate& cartesianCoord) const noexcept;
-        util::Coordinate            getIsometricCoord(const Position& pos) const noexcept;
-        util::Coordinate            getCartesianCoord(const util::Coordinate& isometricCoord) const noexcept;
-        util::Coordinate            getCartesianCoord(const Position& pos) const noexcept;
-        Position                    getRowCol(int x, int y, CameraPtr camera) const noexcept;
+        util::Coordinate            getIsometricCoord(const util::Coordinate& cartesianCoord) const;
+        util::Coordinate            getIsometricCoord(const Position& pos) const;
+        util::Coordinate            getSpriteCoord(const util::Coordinate& cartesianCoord) const;
+        util::Coordinate            getSpriteCoord(const Position& pos) const;
+        util::Coordinate            getCartesianCoord(const util::Coordinate& isometricCoord) const;
+        util::Coordinate            getCartesianCoord(const Position& pos) const;
+        Position                    getRowCol(const util::Coordinate& isometricCoord) const noexcept;
         const TileMatrix&           getTiles() const noexcept;
         TileState                   getState(const Position& pos) const;
+        void                        setState(const Position& pos, TileState newState);
+        IDynamicObjectPtr           getObject(const Position& pos) const;
+        void                        setObject(const Position& pos, IDynamicObjectPtr newObject = nullptr);
         bool                        isCorrectPosition(const Position& pos) const;
         bool                        isWalkable(const Position& pos) const;
-        void                        setState(const Position& pos, TileState newState);
+        bool                        isWall(const Position& pos) const;
 
     private:
         TransformationParameters    _transformParams;
@@ -75,5 +85,6 @@ namespace object {
 
     std::string                     getTileName(TileState state);
     SDL_Rect                        generateVisibleRect(const FieldPtr field, int windowWidth, int windowHeight);
+    void                            addObject(FieldPtr field, IDynamicObjectPtr object, const Position& pos);
 
 }
