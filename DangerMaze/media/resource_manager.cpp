@@ -66,7 +66,7 @@ void ResourceManager::loadSprites(const std::string& path, SDL_Renderer* rendere
     }
 
     xml_node textureAtlasNode = doc.child("TextureAtlas");
-    string imagePath = textureAtlasNode.attribute("imagePath").value();
+    string imagePath = textureAtlasNode.attribute("image-path").value();
     SDL_Surface* pngImage = IMG_Load(imagePath.c_str());
     if (pngImage == nullptr) {
         cout << "Error [IMG_Load]: " + imagePath << endl;
