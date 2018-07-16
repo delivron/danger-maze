@@ -12,6 +12,13 @@ SDL_Point util::convertToSdlPoint(const Coordinate& coord) {
     };
 }
 
+Coordinate util::convertToCoordinate(const SDL_Point& point) {
+    return {
+        static_cast<float>(point.x),
+        static_cast<float>(point.y)
+    };
+}
+
 Coordinate util::rotate(const Coordinate& point, float angle) {
     float x = point.x * cos(angle) - point.y * sin(angle);
     float y = point.x * sin(angle) + point.y * cos(angle);

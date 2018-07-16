@@ -16,6 +16,7 @@ namespace util {
     const float                     QUATER_PI           = 0.25f * PI;
 
     SDL_Point                       convertToSdlPoint(const Coordinate& coord);
+    Coordinate                      convertToCoordinate(const SDL_Point& point);
     Coordinate                      rotate(const Coordinate& coord, float angle);
     Coordinate                      scale(const Coordinate& coord, float xCoef, float yCoef);
 
