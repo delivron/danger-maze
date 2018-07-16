@@ -69,6 +69,7 @@ namespace app {
 
         static const SDL_Color                  BACKGROUND_COLOR;
         static const object::TileDescription    TILE_DESCRIPTION;
+        static const float                      PLAYER_SPEED;
     };
 
     void                            loop(Application& application);

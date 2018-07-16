@@ -30,6 +30,8 @@ const TileDescription Application::TILE_DESCRIPTION = {
     60  // tileY
 };
 
+const float Application::PLAYER_SPEED = 75.0f;
+
 Application::Application() noexcept
     : _running(false)
     , _mouseControl(false)
@@ -94,7 +96,7 @@ bool Application::initialize(const string& title, const Settings& settings) {
     );
 
     Position playerPos = { _field->getHeight() - 2, _field->getWidth() - 2 };
-    _player = make_shared<Player>(_resourceManager.getAnimation("player"), 75.0f);
+    _player = make_shared<Player>(_resourceManager.getAnimation("player"), PLAYER_SPEED);
     addObject(_field, _player, playerPos);
     _objects.push_back(_player);
 
