@@ -4,6 +4,8 @@
 
 #include "SDL.h"
 
+#include "dynamic_object.h"
+
 namespace object {
 
     class Camera {
