@@ -69,6 +69,30 @@
     <ClCompile Include="object\field.cpp">
       <Filter>Исходные файлы\object</Filter>
     </ClCompile>
+    <ClCompile Include="media\animation.cpp">
+      <Filter>Исходные файлы\media</Filter>
+    </ClCompile>
+    <ClCompile Include="object\dynamic_object.cpp">
+      <Filter>Исходные файлы\object</Filter>
+    </ClCompile>
+    <ClCompile Include="object\hero.cpp">
+      <Filter>Исходные файлы\object</Filter>
+    </ClCompile>
+    <ClCompile Include="object\player.cpp">
+      <Filter>Исходные файлы\object</Filter>
+    </ClCompile>
+    <ClCompile Include="app\simulation.cpp">
+      <Filter>Исходные файлы\app</Filter>
+    </ClCompile>
+    <ClCompile Include="object\position.cpp">
+      <Filter>Исходные файлы\object</Filter>
+    </ClCompile>
+    <ClCompile Include="app\priority_tree.cpp">
+      <Filter>Исходные файлы\app</Filter>
+    </ClCompile>
+    <ClCompile Include="app\path_searching.cpp">
+      <Filter>Исходные файлы\app</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="app\application.h">
@@ -79,9 +103,6 @@
     </ClInclude>
     <ClInclude Include="util\xml_attribute.h">
       <Filter>Файлы заголовков\util</Filter>
-    </ClInclude>
-    <ClInclude Include="media\frame.h">
-      <Filter>Файлы заголовков\media</Filter>
     </ClInclude>
     <ClInclude Include="media\resource_manager.h">
       <Filter>Файлы заголовков\media</Filter>
@@ -101,12 +122,42 @@
     <ClInclude Include="object\field.h">
       <Filter>Файлы заголовков\object</Filter>
     </ClInclude>
+    <ClInclude Include="object\dynamic_object.h">
+      <Filter>Файлы заголовков\object</Filter>
+    </ClInclude>
+    <ClInclude Include="media\animation.h">
+      <Filter>Файлы заголовков\media</Filter>
+    </ClInclude>
+    <ClInclude Include="object\position.h">
+      <Filter>Файлы заголовков\object</Filter>
+    </ClInclude>
+    <ClInclude Include="object\hero.h">
+      <Filter>Файлы заголовков\object</Filter>
+    </ClInclude>
+    <ClInclude Include="object\fireball.h">
+      <Filter>Файлы заголовков\object</Filter>
+    </ClInclude>
+    <ClInclude Include="object\player.h">
+      <Filter>Файлы заголовков\object</Filter>
+    </ClInclude>
+    <ClInclude Include="app\simulation.h">
+      <Filter>Файлы заголовков\app</Filter>
+    </ClInclude>
+    <ClInclude Include="app\priority_tree.h">
+      <Filter>Файлы заголовков\app</Filter>
+    </ClInclude>
+    <ClInclude Include="app\path_searching.h">
+      <Filter>Файлы заголовков\app</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="settings.xml">
       <Filter>Файлы ресурсов</Filter>
     </Xml>
     <Xml Include="sprites\tiles.xml">
+      <Filter>Файлы ресурсов\sprites</Filter>
+    </Xml>
+    <Xml Include="sprites\player.xml">
       <Filter>Файлы ресурсов\sprites</Filter>
     </Xml>
   </ItemGroup>

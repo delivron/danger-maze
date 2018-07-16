@@ -20,24 +20,40 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="app\application.cpp" />
+    <ClCompile Include="app\path_searching.cpp" />
+    <ClCompile Include="app\priority_tree.cpp" />
+    <ClCompile Include="app\simulation.cpp" />
     <ClCompile Include="app\settings.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="media\animation.cpp" />
     <ClCompile Include="media\render_manager.cpp" />
     <ClCompile Include="media\resource_manager.cpp" />
     <ClCompile Include="media\sprite.cpp" />
     <ClCompile Include="object\camera.cpp" />
+    <ClCompile Include="object\dynamic_object.cpp" />
     <ClCompile Include="object\field.cpp" />
+    <ClCompile Include="object\hero.cpp" />
+    <ClCompile Include="object\player.cpp" />
+    <ClCompile Include="object\position.cpp" />
     <ClCompile Include="util\transformation.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="app\application.h" />
+    <ClInclude Include="app\path_searching.h" />
+    <ClInclude Include="app\priority_tree.h" />
+    <ClInclude Include="app\simulation.h" />
     <ClInclude Include="app\settings.h" />
-    <ClInclude Include="media\frame.h" />
+    <ClInclude Include="media\animation.h" />
     <ClInclude Include="media\render_manager.h" />
     <ClInclude Include="media\resource_manager.h" />
     <ClInclude Include="media\sprite.h" />
     <ClInclude Include="object\camera.h" />
+    <ClInclude Include="object\dynamic_object.h" />
+    <ClInclude Include="object\fireball.h" />
     <ClInclude Include="object\field.h" />
+    <ClInclude Include="object\hero.h" />
+    <ClInclude Include="object\player.h" />
+    <ClInclude Include="object\position.h" />
     <ClInclude Include="util\transformation.h" />
     <ClInclude Include="util\xml_attribute.h" />
   </ItemGroup>
@@ -45,6 +61,7 @@
     <Xml Include="settings.xml">
       <SubType>Designer</SubType>
     </Xml>
+    <Xml Include="sprites\player.xml" />
     <Xml Include="sprites\tiles.xml" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
