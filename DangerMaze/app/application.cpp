@@ -1,8 +1,11 @@
+#include <utility>
 #include <iostream>
 
 #include "SDL_image.h"
 
+#include "simulation.h"
 #include "application.h"
+#include "path_searching.h"
 
 #define CHECK_SDL_RESULT(condition, functionName)                           \
 if (condition) {                                                            \
@@ -24,15 +27,17 @@ const TileDescription Application::TILE_DESCRIPTION = {
     35, // halfHorizontalDiag
     20, // halfVerticalDiag
     35, // tileX
-    55, // tileY
+    60, // tileY
 };
 
 Application::Application() noexcept
     : _running(false)
     , _mouseControl(false)
+    , _state(LevelState::PLAYING)
     , _window(nullptr)
     , _camera(nullptr)
     , _field(nullptr)
+    , _lastUpdateTime(clock())
 {
 }
 
@@ -86,25 +91,74 @@ bool Application::initialize(const string& title, const Settings& settings) {
         generateVisibleRect(_field, settings.display.width, settings.display.height)
     );
 
+    Position playerPos = { _field->getHeight() - 2, _field->getWidth() - 2 };
+    _player = make_shared<Player>(_resourceManager.getAnimation("player"), 75.0f);
+    addObject(_field, _player, playerPos);
+    _objects.push_back(_player);
+
     // новая позиция камеры, что бы указанная точка была по центру окна
-    Position targetPosition = { 0, 0 };
-    SDL_Point cameraPosition = convertToSdlPoint( _field->getIsometricCoord(targetPosition) );
-    cameraPosition.x -= settings.display.width / 2 - TILE_DESCRIPTION.halfHorizontalDiag;
-    cameraPosition.y -= settings.display.height / 2 - TILE_DESCRIPTION.tileY;
+    SDL_Point cameraPosition = convertToSdlPoint( _field->getIsometricCoord(playerPos) );
+    cameraPosition.x -= settings.display.width / 2;
+    cameraPosition.y -= settings.display.height / 2;
     _camera->setPosition(cameraPosition);
 
     return true;
 }
 
 void Application::update() {
+    clock_t currentTime = clock();
+    clock_t deltaTimeMs = currentTime - _lastUpdateTime;
 
+    for (size_t i = 0; i < _objects.size(); ++i) {
+        IDynamicObjectPtr object = _objects[i];
+
+        if (object == nullptr) {
+            continue;
+        }
+
+        if (object->isAlive()) {
+            moveObject(object, _field, deltaTimeMs);
+
+            bool beforeMoveFlag = object->isMove();
+            object->update();
+            bool afterMoveFlag = object->isMove();
+
+            // проверка стены спереди
+            if (!beforeMoveFlag && afterMoveFlag) {
+                Position forwardPos = object->getEndPosition();
+                if (_field->isWall(forwardPos)) {
+                    object->setMoveFlag(false);
+                    object->setEndPosition( object->getBeginPosition() );
+
+                    if (object == _player) {
+                        _player->clearPath();
+                    }
+                }
+            }
+        }
+        
+        // написано не через else, так как объект может умереть в условии выше
+        if (!object->isAlive()) {
+            _objects.erase(_objects.begin() + i);
+            --i;
+        }
+    }
+
+    _lastUpdateTime = currentTime;
 }
 
 void Application::render() {
-    showField();
-    showCursor();
+    uint32_t width = static_cast<uint32_t>( _field->getWidth() );
+    uint32_t height = static_cast<uint32_t>( _field->getHeight() );
+    PriorityTree priorityTree(width, height);
 
+    addFieldToPriorityTree(priorityTree);
+    addCursorToPriorityTree(priorityTree);
+    addObjectsToPriorityTree(priorityTree);
+
+    _renderManager.setQueue(priorityTree.getSortedSprites());
     _renderManager.renderAll(_camera);
+    _renderManager.clearQueue();
 }
 
 void Application::handleEvent(const SDL_Event& event) {
@@ -147,7 +201,11 @@ void Application::handleMouseMotion(const SDL_Event& event) noexcept {
     if (_mouseControl) {
         _camera->move(event.motion.xrel, event.motion.yrel);
     }
-    _currentPos = _field->getRowCol(event.motion.x, event.motion.y, _camera);
+    
+    SDL_Point mouseGlobalPoint = _camera->getPosition();
+    mouseGlobalPoint.x += event.motion.x;
+    mouseGlobalPoint.y += event.motion.y;
+    _currentPos = _field->getRowCol( convertToCoordinate(mouseGlobalPoint) );
 }
 
 void Application::handleMouseButton(const SDL_Event& event) noexcept {
@@ -155,19 +213,53 @@ void Application::handleMouseButton(const SDL_Event& event) noexcept {
 
     if (event.button.button == SDL_BUTTON_MIDDLE) {
         _mouseControl = isButtonDown;
+        return;
     }
-    else if (event.button.button == SDL_BUTTON_RIGHT && isButtonDown) {
-        if (_field->isCorrectPosition(_currentPos)) {
-            if (_field->getState(_currentPos) == TileState::DEFAULT) {
-                _field->setState(_currentPos, TileState::WALL_DEFAULT);
-            }
-            else if (_field->getState(_currentPos) == TileState::WALL_DEFAULT) {
-                _field->setState(_currentPos, TileState::DEFAULT);
-            }
+    
+    if (!isButtonDown || _state != LevelState::PLAYING || !_player->isAlive()) {
+        return;
+    }
+
+    if (event.button.button == SDL_BUTTON_LEFT) {
+        handleLeftMouseButton();
+    }
+    else if (event.button.button == SDL_BUTTON_RIGHT) {
+        handleRightMouseButton();
+    }
+}
+
+void Application::handleLeftMouseButton() noexcept {
+    if (!_field->isCorrectPosition(_currentPos)) {
+        return;
+    }
+
+    PathMatrix pathMatrix = generatePathMatrix(_field);
+    fillDistance(pathMatrix, _player->getEndPosition(), _currentPos);
+    
+    deque<Direction> path = searchPath(pathMatrix, _currentPos);
+    _player->setPath( move(path) );
+}
+
+void Application::handleRightMouseButton() noexcept {
+    if (!_field->isCorrectPosition(_currentPos)) {
+        return;
+    }
+
+    // Eсли клетка задевает какой-либо объект, то установка стены запрещена.
+    // Оптимально проверять это с помощью _field, но тогда требуется ввод дополнительных полей в структуру Tile.
+    // В данном случае перебор не займёт много времени, если динамичных объектов не много.
+    for (IDynamicObjectPtr object : _objects) {
+        if (_currentPos == object->getBeginPosition()
+            || _currentPos == object->getEndPosition()) {
+            return;
         }
     }
-    else if (event.button.button == SDL_BUTTON_LEFT && isButtonDown) {
-        // go to point
+
+    if (_field->getState(_currentPos) == TileState::DEFAULT) {
+        _field->setState(_currentPos, TileState::WALL_DEFAULT);
+    }
+    else if (_field->getState(_currentPos) == TileState::WALL_DEFAULT) {
+        _field->setState(_currentPos, TileState::DEFAULT);
     }
 }
 
@@ -196,12 +288,11 @@ FieldPtr Application::generateField(uint32_t width, uint32_t height) const {
     return field;
 }
 
-void Application::showField() {
+void Application::addFieldToPriorityTree(PriorityTree& tree) const {
     const TileMatrix& tiles = _field->getTiles();
     int width = _field->getWidth();
     int height = _field->getHeight();
 
-    // рендеринг игрового поля
     for (int i = 0; i < height; ++i) {
         const vector<Tile> row = tiles[i];
 
@@ -211,22 +302,49 @@ void Application::showField() {
             SpritePtr sprite = _resourceManager.getSprite(spriteName);
 
             if (sprite != nullptr) {
-                int priority = _field->getPriority({ i, j });
-                _renderManager.addToQueue(sprite, tile.drawPoint, priority);
+                tree.addSprite(
+                    RenderData{ tile.drawPoint, sprite },
+                    Position{ i, j }
+                );
             }
         }
     }
 }
 
-void Application::showCursor() {
+void Application::addCursorToPriorityTree(PriorityTree& tree) const {
     bool isCorrectPosition = _field->isCorrectPosition(_currentPos);
 
     if (isCorrectPosition && _field->isWalkable(_currentPos)) {
         SpritePtr cursorSprite = _resourceManager.getSprite("cursor");
-        Coordinate addCoord = _field->getIsometricCoord(_currentPos);
-        int priority = _field->getPriority(_currentPos);
+        Coordinate addCoord = _field->getSpriteCoord(_currentPos);
 
-        _renderManager.addToQueue(cursorSprite, convertToSdlPoint(addCoord), priority + 1);
+        tree.addSprite(
+            RenderData{ convertToSdlPoint(addCoord), cursorSprite },
+            _currentPos
+        );
+    }
+}
+
+void Application::addObjectsToPriorityTree(PriorityTree& tree) const {
+    for (IDynamicObjectPtr object : _objects) {
+        SpritePtr sprite = object->getAnimation()->getSprite();
+        Coordinate isometricCoord = _field->getSpriteCoord( object->getCartesianCoord() );
+        Position beginPos = object->getBeginPosition();
+        Direction dir = object->getDirection();
+
+        if (object->isMove()) {
+            tree.addSprite(
+                { convertToSdlPoint(isometricCoord), sprite },
+                beginPos,
+                dir
+            );
+        }
+        else {
+            tree.addSprite(
+                { convertToSdlPoint(isometricCoord), sprite },
+                beginPos
+            );
+        }
     }
 }
 

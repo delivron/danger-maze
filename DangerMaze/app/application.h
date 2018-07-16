@@ -1,18 +1,29 @@
 #pragma once
 
+#include <ctime>
 #include <string>
+#include <vector>
 
 #include "SDL.h"
 
 #include "settings.h"
+#include "priority_tree.h"
 
 #include "../object/field.h"
 #include "../object/camera.h"
+#include "../object/player.h"
+#include "../object/dynamic_object.h"
 
 #include "../media/render_manager.h"
 #include "../media/resource_manager.h"
 
 namespace app {
+
+    enum class LevelState {
+        PLAYING,
+        GAME_OVER,
+        COMPLETED,
+    };
 
     class Application {
     public:
@@ -31,18 +42,27 @@ namespace app {
         void                        handleKeyUp(const SDL_Event& event) noexcept;
         void                        handleMouseMotion(const SDL_Event& event) noexcept;
         void                        handleMouseButton(const SDL_Event& event) noexcept;
+        void                        handleLeftMouseButton() noexcept;
+        void                        handleRightMouseButton() noexcept;
         object::FieldPtr            generateField(uint32_t width, uint32_t height) const;
-        void                        showField();
-        void                        showCursor();
+        void                        addFieldToPriorityTree(PriorityTree& tree) const;
+        void                        addCursorToPriorityTree(PriorityTree& tree) const;
+        void                        addObjectsToPriorityTree(PriorityTree& tree) const;
+
+        using Objects               = std::vector<object::IDynamicObjectPtr>;
 
         bool                        _running;
         bool                        _mouseControl;
+        LevelState                  _state;
         SDL_Window*                 _window;
         media::ResourceManager      _resourceManager;
         media::RenderManager        _renderManager;
         object::CameraPtr           _camera;
         object::FieldPtr            _field;
+        object::PlayerPtr           _player;
         object::Position            _currentPos;
+        Objects                     _objects;
+        clock_t                     _lastUpdateTime;
 
         static const SDL_Color                  BACKGROUND_COLOR;
         static const object::TileDescription    TILE_DESCRIPTION;
