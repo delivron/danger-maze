@@ -27,7 +27,7 @@ const TileDescription Application::TILE_DESCRIPTION = {
     35, // halfHorizontalDiag
     20, // halfVerticalDiag
     35, // tileX
-    60, // tileY
+    60  // tileY
 };
 
 Application::Application() noexcept
@@ -81,9 +81,11 @@ bool Application::initialize(const string& title, const Settings& settings) {
     CHECK_SDL_RESULT(renderer == nullptr, "SDL_CreateRenderer");
 
     _resourceManager.loadSpriteFromDescription("sprites/tiles.xml", renderer);
+    _resourceManager.loadSpriteFromDescription("sprites/text.xml", renderer);
+    _resourceManager.loadSpriteFromDescription("sprites/markers.xml", renderer);
     _resourceManager.loadAnimationFromDescription("sprites/player.xml", renderer);
 
-    _field = generateField(settings.world.width, settings.world.height);
+    generateField(settings.world.width, settings.world.height);
 
     _camera = make_shared<Camera>(
         settings.display.width,
@@ -128,7 +130,7 @@ void Application::update() {
                 Position forwardPos = object->getEndPosition();
                 if (_field->isWall(forwardPos)) {
                     object->setMoveFlag(false);
-                    object->setEndPosition( object->getBeginPosition() );
+                    object->setEndPosition(object->getBeginPosition());
 
                     if (object == _player) {
                         _player->clearPath();
@@ -136,7 +138,7 @@ void Application::update() {
                 }
             }
         }
-        
+
         // написано не через else, так как объект может умереть в условии выше
         if (!object->isAlive()) {
             _objects.erase(_objects.begin() + i);
@@ -144,12 +146,14 @@ void Application::update() {
         }
     }
 
+    updateLevelState();
+
     _lastUpdateTime = currentTime;
 }
 
 void Application::render() {
-    uint32_t width = static_cast<uint32_t>( _field->getWidth() );
-    uint32_t height = static_cast<uint32_t>( _field->getHeight() );
+    uint32_t width = static_cast<uint32_t>(_field->getWidth());
+    uint32_t height = static_cast<uint32_t>(_field->getHeight());
     PriorityTree priorityTree(width, height);
 
     addFieldToPriorityTree(priorityTree);
@@ -157,6 +161,16 @@ void Application::render() {
     addObjectsToPriorityTree(priorityTree);
 
     _renderManager.setQueue(priorityTree.getSortedSprites());
+
+    if (_state == LevelState::COMPLETED) {
+        SpritePtr levelCompletedSprite = _resourceManager.getSprite("level_completed");
+        renderInCenter(levelCompletedSprite);
+    }
+    else if (_state == LevelState::GAME_OVER) {
+        SpritePtr gameOverSprite = _resourceManager.getSprite("game_over");
+        renderInCenter(gameOverSprite);
+    }
+
     _renderManager.renderAll(_camera);
     _renderManager.clearQueue();
 }
@@ -190,6 +204,18 @@ void Application::cleanup() {
     IMG_Quit();
 }
 
+void Application::renderInCenter(const SpritePtr sprite) {
+    int w = 1024, h = 768;
+    SDL_GetWindowSize(_window, &w, &h);
+
+    SDL_Point cameraPoint = _camera->getPosition();
+    SDL_Rect spriteRect = sprite->getRectangle();
+    int x = (w - spriteRect.w) / 2 + cameraPoint.x;
+    int y = (h - spriteRect.h) / 2 + cameraPoint.x;
+
+    _renderManager.addToQueue(RenderData{ { x, y }, sprite });
+}
+
 void Application::handleKeyUp(const SDL_Event& event) noexcept {
     SDL_Scancode scancode = event.key.keysym.scancode;
     if (scancode == SDL_SCANCODE_ESCAPE) {
@@ -215,8 +241,8 @@ void Application::handleMouseButton(const SDL_Event& event) noexcept {
         _mouseControl = isButtonDown;
         return;
     }
-    
-    if (!isButtonDown || _state != LevelState::PLAYING || !_player->isAlive()) {
+
+    if (!isButtonDown || _state != LevelState::PLAYING) {
         return;
     }
 
@@ -263,29 +289,28 @@ void Application::handleRightMouseButton() noexcept {
     }
 }
 
-FieldPtr Application::generateField(uint32_t width, uint32_t height) const {
-    FieldPtr field = make_shared<Field>(
+void Application::generateField(uint32_t width, uint32_t height) {
+    _field = make_shared<Field>(
         width,
         height,
         TILE_DESCRIPTION
     );
 
-    field->setState({ 1, 1 }, TileState::FINISH);
+    _finishPos = { 1, 1 };
+    _field->setState(_finishPos, TileState::FINISH);
 
     int w = static_cast<int>(width);
     int h = static_cast<int>(height);
 
     for (int column = 0; column < w; ++column) {
-        field->setState({ 0, column }, TileState::WALL_BORDER);
-        field->setState({ h - 1, column }, TileState::WALL_BORDER);
+        _field->setState({ 0, column }, TileState::WALL_BORDER);
+        _field->setState({ h - 1, column }, TileState::WALL_BORDER);
     }
 
     for (int row = 1; row < h - 1; ++row) {
-        field->setState({ row, 0 }, TileState::WALL_BORDER);
-        field->setState({ row, w - 1 }, TileState::WALL_BORDER);
+        _field->setState({ row, 0 }, TileState::WALL_BORDER);
+        _field->setState({ row, w - 1 }, TileState::WALL_BORDER);
     }
-
-    return field;
 }
 
 void Application::addFieldToPriorityTree(PriorityTree& tree) const {
@@ -344,6 +369,17 @@ void Application::addObjectsToPriorityTree(PriorityTree& tree) const {
                 { convertToSdlPoint(isometricCoord), sprite },
                 beginPos
             );
+        }
+    }
+}
+
+void Application::updateLevelState() {
+    if (_state == LevelState::PLAYING) {
+        if (!_player->isAlive()) {
+            _state = LevelState::GAME_OVER;
+        }
+        else if (!_player->isMove() && _player->getBeginPosition() == _finishPos) {
+            _state = LevelState::COMPLETED;
         }
     }
 }

@@ -21,8 +21,8 @@ namespace app {
 
     enum class LevelState {
         PLAYING,
-        GAME_OVER,
         COMPLETED,
+        GAME_OVER,
     };
 
     class Application {
@@ -39,15 +39,17 @@ namespace app {
         void                        cleanup();
 
     private:
+        void                        renderInCenter(const media::SpritePtr sprite);
         void                        handleKeyUp(const SDL_Event& event) noexcept;
         void                        handleMouseMotion(const SDL_Event& event) noexcept;
         void                        handleMouseButton(const SDL_Event& event) noexcept;
         void                        handleLeftMouseButton() noexcept;
         void                        handleRightMouseButton() noexcept;
-        object::FieldPtr            generateField(uint32_t width, uint32_t height) const;
+        void                        generateField(uint32_t width, uint32_t height);
         void                        addFieldToPriorityTree(PriorityTree& tree) const;
         void                        addCursorToPriorityTree(PriorityTree& tree) const;
         void                        addObjectsToPriorityTree(PriorityTree& tree) const;
+        void                        updateLevelState();
 
         using Objects               = std::vector<object::IDynamicObjectPtr>;
 
@@ -60,6 +62,7 @@ namespace app {
         object::CameraPtr           _camera;
         object::FieldPtr            _field;
         object::PlayerPtr           _player;
+        object::Position            _finishPos;
         object::Position            _currentPos;
         Objects                     _objects;
         clock_t                     _lastUpdateTime;
