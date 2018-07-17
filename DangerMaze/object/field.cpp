@@ -164,8 +164,7 @@ SDL_Rect object::generateVisibleRect(const FieldPtr field, int windowWidth, int 
 }
 
 void object::addObject(FieldPtr field, IDynamicObjectPtr object, const Position& pos) {
-    object->setBeginPosition(pos);
-    object->setEndPosition(pos);
+    object->setPosition(pos);
     object->setCartesianCoord( field->getCartesianCoord(pos) );
     field->setObject(pos, object);
 }
