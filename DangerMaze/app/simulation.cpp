@@ -38,29 +38,14 @@ bool isCartesianCoordForward(const Coordinate& testCoord, const Coordinate& coor
     return false;
 }
 
-bool tryAttack(IDynamicObjectPtr attacker, IDynamicObjectPtr object) {
-    if (!attacker || !object) {
-        return false;
-    }
-
-    Fraction attackerFraction = attacker->getFraction();
-    Fraction objFraction = object->getFraction();
-
-    if (attackerFraction == Fraction::ENEMY && objFraction == Fraction::PLAYER) {
-        object->setAlive(false);
-        return true;
-    }
-
-    return false;
-}
-
 void app::moveObject(IDynamicObjectPtr object, FieldPtr field, clock_t deltaTimeMs) {
     if (object == nullptr || field == nullptr || !object->isMove()) {
         return;
     }
 
-    if (deltaTimeMs > MS_IN_SECOND) {
-        deltaTimeMs = MS_IN_SECOND;
+    if (!field->isWalkable( object->getEndPosition() )) {
+        object->onHitWithBarrier();
+        return;
     }
 
     Coordinate coord = object->getCartesianCoord();
@@ -68,23 +53,23 @@ void app::moveObject(IDynamicObjectPtr object, FieldPtr field, clock_t deltaTime
     Position oldPos = field->getRowCol( field->getIsometricCoord(coord) );
     Direction dir = object->getDirection();
     Position nextPos = nextPosition(oldPos, dir);
-
     float deltaDist = object->getSpeed() * static_cast<float>(deltaTimeMs) / MS_IN_SECOND;
-
     changeCoord(coord, dir, deltaDist);
-    
+
     Position newPos = field->getRowCol( field->getIsometricCoord(coord) );
     bool endOfStep = false;
 
     if (newPos == oldPos) {
-        Coordinate tileCoord = field->getCartesianCoord(oldPos);
-        endOfStep = isCartesianCoordForward(tileCoord, oldCoord, dir)
+        Coordinate tileCoord = field->getCartesianCoord(newPos);
+        endOfStep = newPos == object->getEndPosition()
             && !isCartesianCoordForward(tileCoord, coord, dir);
     }
     else { // момент перехода из одной плитки в другую
         IDynamicObjectPtr neighbour = field->getObject(newPos);
-        tryAttack(object, neighbour);
-        tryAttack(neighbour, object);
+        if (neighbour != nullptr) {
+            object->onHitWithObject(neighbour->getFraction());
+            neighbour->onHitWithObject(object->getFraction());
+        }
 
         IDynamicObjectPtr obj = field->getObject(oldPos);
         if (obj == object) {
@@ -96,11 +81,11 @@ void app::moveObject(IDynamicObjectPtr object, FieldPtr field, clock_t deltaTime
         }
     }
 
-    object->setCartesianCoord(endOfStep ? field->getCartesianCoord(newPos) : coord);
-
     if (endOfStep) {
-        object->setMoveFlag(false);
-        object->setBeginPosition(newPos);
-        object->setEndPosition(newPos);
+        object->setCartesianCoord( field->getCartesianCoord(newPos) );
+        object->finishMotion();
+    }
+    else {
+        object->setCartesianCoord(coord);
     }
 }
