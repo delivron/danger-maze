@@ -134,7 +134,9 @@ bool Field::isWalkable(const Position& pos) const {
 
 bool Field::isWall(const Position& pos) const {
     TileState state = _tiles[pos.row][pos.column].state;
-    return state == TileState::WALL_BORDER || state == TileState::WALL_DEFAULT;
+    return state == TileState::WALL_BORDER
+        || state == TileState::WALL_DEFAULT
+        || state == TileState::WALL_SMALL;
 }
 
 string object::getTileName(TileState state) {
@@ -145,11 +147,14 @@ string object::getTileName(TileState state) {
     case TileState::DEFAULT:
         return "tile_default";
 
-    case TileState::WALL_BORDER:
-        return "wall_border";
+    case TileState::WALL_SMALL:
+        return "wall_small";
 
     case TileState::WALL_DEFAULT:
         return "wall_default";
+
+    case TileState::WALL_BORDER:
+        return "wall_border";
     }
     return string{};
 }

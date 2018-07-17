@@ -19,8 +19,9 @@ namespace object {
     enum class TileState {
         DEFAULT,
         FINISH,
+        WALL_DEFAULT,
+        WALL_SMALL,
         WALL_BORDER,
-        WALL_DEFAULT
     };
     
     struct Tile {
