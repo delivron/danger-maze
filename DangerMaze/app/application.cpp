@@ -87,7 +87,7 @@ bool Application::initialize(const string& title, const Settings& settings) {
     CHECK_SDL_RESULT(_window == nullptr, "SDL_CreateWindow");
 
     if (settings.fullscreen) {
-        SDL_SetWindowFullscreen(_window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+        SDL_SetWindowFullscreen(_window, SDL_WINDOW_FULLSCREEN);
     }
 
     _renderManager = RenderManager(_window);
