@@ -57,7 +57,7 @@ void PriorityTree::addSprite(const RenderData& spriteInfo, const Position& pos) 
 }
 
 void PriorityTree::addSprite(const RenderData& spriteInfo, const Position& pos, Direction moveDir) {
-    if (moveDir == Direction::UP || moveDir == Direction::DOWN) {
+    if (isVerticalDirection(moveDir)) {
         Position delPos = (moveDir == Direction::UP) ?
             nextPosition(pos, moveDir) : pos;
         SpriteNodePtr delNode = _nodes[delPos.row][delPos.column];
