@@ -4,16 +4,15 @@ using namespace util;
 using namespace media;
 using namespace object;
 
-IDynamicObject::IDynamicObject(Fraction fraction, media::AnimationPtr animation, float speed)
-    : _fraction(fraction)
+IDynamicObject::IDynamicObject(Fraction fraction, const media::AnimationPtr animation, float speed)
+    : IStaticObject(animation)
+    , _fraction(fraction)
     , _beginPosition({0, 0})
     , _endPosition({ 0, 0 })
     , _cartesianCoord({ 0.0f, 0.0f })
     , _speed(speed)
     , _alive(true)
     , _moveFlag(false)
-    , _direction(Direction::LEFT)
-    , _animation(animation)
 {
     if (_animation != nullptr) {
         _animation->play();
@@ -44,14 +43,6 @@ void IDynamicObject::setCartesianCoord(const Coordinate& cartesianPosition) noex
     _cartesianCoord = cartesianPosition;
 }
 
-Direction IDynamicObject::getDirection() const noexcept {
-    return _direction;
-}
-
-void IDynamicObject::setDirection(Direction direction) noexcept {
-    _direction = direction;
-}
-
 float IDynamicObject::getSpeed() const noexcept {
     return _speed;
 }
@@ -74,10 +65,6 @@ bool IDynamicObject::isMove() const noexcept {
 
 void IDynamicObject::setMoveFlag(bool moveFlag) {
     _moveFlag = moveFlag;
-}
-
-AnimationPtr IDynamicObject::getAnimation() const noexcept {
-    return _animation;
 }
 
 void IDynamicObject::startMotion(Direction direction) {
