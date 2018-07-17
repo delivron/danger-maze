@@ -15,6 +15,8 @@ namespace object {
         void                        setPath(const std::deque<Direction>& path);
         void                        clearPath();
         void                        update() override;
+        void                        onHitWithBarrier() override;
+        void                        onHitWithObject(Fraction objectFraction) override;
 
     private:
         std::deque<Direction>       _path;

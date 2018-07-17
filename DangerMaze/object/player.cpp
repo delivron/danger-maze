@@ -13,7 +13,7 @@ deque<Direction> Player::getPath() const noexcept {
     return _path;
 }
 
-void Player::setPath(const std::deque<Direction>& path) {
+void Player::setPath(const deque<Direction>& path) {
     _path = path;
 }
 
@@ -23,8 +23,19 @@ void Player::clearPath() {
 
 void Player::update() {
     if (!_moveFlag && !_path.empty()) {
-        setDirection( _path.front() );
+        startMotion( _path.front() );
         _path.pop_front();
-        _moveFlag = true;
+    }
+}
+
+void Player::onHitWithBarrier() {
+    resetMotion();
+    clearPath();
+}
+
+void Player::onHitWithObject(Fraction objectFraction) {
+    if (objectFraction == Fraction::ENEMY) {
+        onHitWithBarrier();
+        setAlive(false);
     }
 }
