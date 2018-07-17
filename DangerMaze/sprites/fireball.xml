@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TextureAtlas image-path="sprites/fireball.png">
+  <Sprite name="fireball_1" x="1" y="1" w="70" h="81"/>
+  <Sprite name="fireball_2" x="72" y="1" w="70" h="81"/>
+  <Sprite name="fireball_3" x="143" y="1" w="70" h="81"/>
+  <Sprite name="fireball_4" x="214" y="1" w="70" h="81"/>
+  <Sprite name="fireball_5" x="285" y="1" w="70" h="81"/>
+  <Sprite name="fireball_6" x="1" y="83" w="70" h="81"/>
+  <Sprite name="fireball_7" x="72" y="83" w="70" h="81"/>
+  <Sprite name="fireball_8" x="143" y="83" w="70" h="81"/>
+  <Sprite name="fireball_9" x="214" y="83" w="70" h="81"/>
+  <Sprite name="fireball_10" x="285" y="83" w="70" h="81"/>
+</TextureAtlas>
