@@ -34,6 +34,10 @@ uint32_t Animation::getFrame() const noexcept {
     return _frame;
 }
 
+uint32_t Animation::getFramesCount() const noexcept {
+    return static_cast<uint32_t>( _sprites.size() );
+}
+
 bool Animation::isRunning() const noexcept {
     return _running;
 }

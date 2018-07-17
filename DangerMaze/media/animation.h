@@ -20,6 +20,7 @@ namespace media {
         void                        setDelay(uint32_t delayMs) noexcept;
         uint32_t                    getDelay() const noexcept;
         uint32_t                    getFrame() const noexcept;
+        uint32_t                    getFramesCount() const noexcept;
         bool                        isRunning() const noexcept;
         void                        play() noexcept;
         void                        stop() noexcept;
