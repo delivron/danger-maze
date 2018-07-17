@@ -3,7 +3,7 @@
 using namespace std;
 using namespace object;
 
-Player::Player(media::AnimationPtr animation, float speed)
+Player::Player(const media::AnimationPtr animation, float speed)
     : IHero(Fraction::PLAYER, animation, speed)
 {    
     setDirection(Direction::LEFT);

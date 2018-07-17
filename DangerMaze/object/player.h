@@ -9,7 +9,7 @@ namespace object {
 
     class Player : public IHero {
     public:
-        Player(media::AnimationPtr animation, float speed);
+        Player(const media::AnimationPtr animation, float speed);
 
         std::deque<Direction>       getPath() const noexcept;
         void                        setPath(const std::deque<Direction>& path);
