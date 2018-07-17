@@ -93,6 +93,9 @@
     <ClCompile Include="app\path_searching.cpp">
       <Filter>Исходные файлы\app</Filter>
     </ClCompile>
+    <ClCompile Include="object\enemy.cpp">
+      <Filter>Исходные файлы\object</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="app\application.h">
@@ -149,6 +152,9 @@
     <ClInclude Include="app\path_searching.h">
       <Filter>Файлы заголовков\app</Filter>
     </ClInclude>
+    <ClInclude Include="object\enemy.h">
+      <Filter>Файлы заголовков\object</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="settings.xml">
@@ -160,5 +166,25 @@
     <Xml Include="sprites\player.xml">
       <Filter>Файлы ресурсов\sprites</Filter>
     </Xml>
+    <Xml Include="sprites\markers.xml">
+      <Filter>Файлы ресурсов\sprites</Filter>
+    </Xml>
+    <Xml Include="sprites\text.xml">
+      <Filter>Файлы ресурсов\sprites</Filter>
+    </Xml>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="sprites\markers.png">
+      <Filter>Файлы ресурсов\sprites</Filter>
+    </Image>
+    <Image Include="sprites\player.png">
+      <Filter>Файлы ресурсов\sprites</Filter>
+    </Image>
+    <Image Include="sprites\text.png">
+      <Filter>Файлы ресурсов\sprites</Filter>
+    </Image>
+    <Image Include="sprites\tiles.png">
+      <Filter>Файлы ресурсов\sprites</Filter>
+    </Image>
   </ItemGroup>
 </Project>
