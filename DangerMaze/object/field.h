@@ -56,6 +56,7 @@ namespace object {
     public:
         Field(uint32_t width, uint32_t height, const TileDescription& tileDescription);
         
+        float                       getSquareSize() const noexcept;
         TileDescription             getTileDescription() const noexcept;
         int                         getWidth() const noexcept;
         int                         getHeight() const noexcept;
@@ -85,6 +86,11 @@ namespace object {
 
     std::string                     getTileName(TileState state);
     SDL_Rect                        generateVisibleRect(const FieldPtr field, int windowWidth, int windowHeight);
-    void                            addObject(FieldPtr field, IDynamicObjectPtr object, const Position& pos);
+    void                            addObject(
+                                        FieldPtr field,
+                                        IDynamicObjectPtr object,
+                                        const Position& pos,
+                                        const util::Coordinate& cartOffset = { 0.0f, 0.0f }
+                                    );
 
 }

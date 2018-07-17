@@ -32,6 +32,10 @@ Field::Field(uint32_t width, uint32_t height, const TileDescription& tileDescrip
     }
 }
 
+float Field::getSquareSize() const noexcept {
+    return _transformParams.squareSize;
+}
+
 TileDescription Field::getTileDescription() const noexcept {
     return _tileDescription;
 }
@@ -163,8 +167,13 @@ SDL_Rect object::generateVisibleRect(const FieldPtr field, int windowWidth, int 
     };
 }
 
-void object::addObject(FieldPtr field, IDynamicObjectPtr object, const Position& pos) {
+void object::addObject(FieldPtr field, IDynamicObjectPtr object, const Position& pos, const Coordinate& cartOffset) {
     object->setPosition(pos);
-    object->setCartesianCoord( field->getCartesianCoord(pos) );
+
+    Coordinate cartCoord = field->getCartesianCoord(pos);
+    cartCoord.x += cartOffset.x;
+    cartCoord.y += cartOffset.y;
+
+    object->setCartesianCoord(cartCoord);
     field->setObject(pos, object);
 }
