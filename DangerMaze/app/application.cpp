@@ -141,6 +141,16 @@ void Application::update() {
 
         // написано не через else, так как объект может умереть в условии выше
         if (!object->isAlive()) {
+            Position p1 = object->getBeginPosition();
+            if (_field->getObject(p1) == object) {
+                _field->setObject(p1, nullptr);
+            }
+
+            Position p2 = object->getEndPosition();
+            if (_field->getObject(p2) == object) {
+                _field->setObject(p2, nullptr);
+            }
+
             _objects.erase(_objects.begin() + i);
             --i;
         }
