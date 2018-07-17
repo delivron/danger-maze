@@ -68,12 +68,18 @@
     <Xml Include="settings.xml">
       <SubType>Designer</SubType>
     </Xml>
+    <Xml Include="sprites\cannon.xml" />
+    <Xml Include="sprites\enemy.xml" />
+    <Xml Include="sprites\fireball.xml" />
     <Xml Include="sprites\markers.xml" />
     <Xml Include="sprites\player.xml" />
     <Xml Include="sprites\text.xml" />
     <Xml Include="sprites\tiles.xml" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="sprites\cannon.png" />
+    <Image Include="sprites\enemy.png" />
+    <Image Include="sprites\fireball.png" />
     <Image Include="sprites\markers.png" />
     <Image Include="sprites\player.png" />
     <Image Include="sprites\text.png" />

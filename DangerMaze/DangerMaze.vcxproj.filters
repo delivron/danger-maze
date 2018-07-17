@@ -187,6 +187,15 @@
     <Xml Include="sprites\text.xml">
       <Filter>Файлы ресурсов\sprites</Filter>
     </Xml>
+    <Xml Include="sprites\cannon.xml">
+      <Filter>Файлы ресурсов\sprites</Filter>
+    </Xml>
+    <Xml Include="sprites\enemy.xml">
+      <Filter>Файлы ресурсов\sprites</Filter>
+    </Xml>
+    <Xml Include="sprites\fireball.xml">
+      <Filter>Файлы ресурсов\sprites</Filter>
+    </Xml>
   </ItemGroup>
   <ItemGroup>
     <Image Include="sprites\markers.png">
@@ -199,6 +208,15 @@
       <Filter>Файлы ресурсов\sprites</Filter>
     </Image>
     <Image Include="sprites\tiles.png">
+      <Filter>Файлы ресурсов\sprites</Filter>
+    </Image>
+    <Image Include="sprites\cannon.png">
+      <Filter>Файлы ресурсов\sprites</Filter>
+    </Image>
+    <Image Include="sprites\enemy.png">
+      <Filter>Файлы ресурсов\sprites</Filter>
+    </Image>
+    <Image Include="sprites\fireball.png">
       <Filter>Файлы ресурсов\sprites</Filter>
     </Image>
   </ItemGroup>
