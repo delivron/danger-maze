@@ -350,10 +350,17 @@ void Application::initializeObjects() {
     addEnemy({ 23, 28 }, { 23, 26 }, { 23, 28 }, Direction::LEFT);
     addEnemy({ 21, 26 }, { 21, 26 }, { 21, 28 }, Direction::RIGHT);
 
-    addCannon({ 28, 29 }, Direction::LEFT);
-    addCannon({ 28, 0 }, Direction::RIGHT);
-    addCannon({ 0, 1 }, Direction::DOWN);
-    addCannon({ 29, 1 }, Direction::UP);
+    addCannon({ 27, 29 }, Direction::LEFT);
+    addCannon({ 27, 0 }, Direction::RIGHT);
+    addCannon({ 26, 29 }, Direction::LEFT);
+    addCannon({ 26, 0 }, Direction::RIGHT);
+
+    addCannon({ 0, 2 }, Direction::DOWN);
+    addCannon({ 2, 0 }, Direction::RIGHT);
+    addCannon({ 2, 29 }, Direction::LEFT);
+
+    addCannon({ 0, 13 }, Direction::DOWN);
+    addCannon({ 0, 16 }, Direction::DOWN);
 }
 
 void Application::addFieldToPriorityTree(PriorityTree& tree) const {
@@ -470,6 +477,7 @@ void Application::addCannon(const Position& addPos, Direction direction) {
     cannon->setPosition(addPos);
     cannon->setDirection(direction);
     _cannons.push_back(cannon);
+    _field->setState(addPos, TileState::WALL_SMALL);
 }
 
 void Application::addFireball(const Position& addPos, Direction direction) {
