@@ -8,8 +8,7 @@ namespace object {
     public:
         IHero(Fraction fraction, media::AnimationPtr animation, float speed);
 
-        void                        setDirection(Direction direction) noexcept;
-        void                        update() = 0;
+        void                        setDirection(Direction direction) noexcept override;
     };
 
     using IHeroPtr                  = std::shared_ptr<IHero>;
