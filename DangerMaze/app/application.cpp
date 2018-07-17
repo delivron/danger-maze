@@ -9,6 +9,7 @@
 #include "path_searching.h"
 
 #include "../object/enemy.h"
+#include "../object/fireball.h"
 
 #define CHECK_SDL_RESULT(condition, functionName)                           \
 if (condition) {                                                            \
@@ -35,9 +36,15 @@ const SDL_Color Application::BACKGROUND_COLOR = { 155, 221, 255, 255 };
 
 const uint32_t Application::FIELD_SIZE = 30;
 
+const int Application::CANNON_DELAY_MS_MIN = 2000;
+
+const int Application::CANNON_DELAY_MS_MAX = 6000;
+
 const float Application::PLAYER_SPEED = 90.0f;
 
 const float Application::ENEMY_SPEED = 125.0f;
+
+const float Application::FIREBALL_SPEED = 200.0f;
 
 Application::Application() noexcept
     : _running(false)
@@ -94,6 +101,8 @@ bool Application::initialize(const string& title, const Settings& settings) {
     _resourceManager.loadSpriteFromDescription("sprites/markers.xml", renderer);
     _resourceManager.loadAnimationFromDescription("sprites/player.xml", renderer);
     _resourceManager.loadAnimationFromDescription("sprites/enemy.xml", renderer);
+    _resourceManager.loadAnimationFromDescription("sprites/cannon.xml", renderer);
+    _resourceManager.loadAnimationFromDescription("sprites/fireball.xml", renderer);
 
     generateField(FIELD_SIZE, FIELD_SIZE);
 
@@ -103,6 +112,7 @@ bool Application::initialize(const string& title, const Settings& settings) {
         generateVisibleRect(_field, settings.displayWidth, settings.displayHeight)
     );
 
+    srand( static_cast<unsigned int>( time(nullptr) ) );
     initializeObjects();
 
     Position playerPos = _player->getBeginPosition();
@@ -133,6 +143,13 @@ void Application::update() {
         if (!object->isAlive()) {
             _objects.erase(_objects.begin() + i);
             --i;
+        }
+    }
+
+    for (CannonPtr cannon : _cannons) {
+        cannon->update();
+        if (cannon->tryShoot()) {
+            addFireball(cannon->getPosition(), cannon->getDirection());
         }
     }
 
@@ -332,6 +349,11 @@ void Application::initializeObjects() {
     addEnemy({ 25, 26 }, { 25, 26 }, { 25, 28 }, Direction::RIGHT);
     addEnemy({ 23, 28 }, { 23, 26 }, { 23, 28 }, Direction::LEFT);
     addEnemy({ 21, 26 }, { 21, 26 }, { 21, 28 }, Direction::RIGHT);
+
+    addCannon({ 28, 29 }, Direction::LEFT);
+    addCannon({ 28, 0 }, Direction::RIGHT);
+    addCannon({ 0, 1 }, Direction::DOWN);
+    addCannon({ 29, 1 }, Direction::UP);
 }
 
 void Application::addFieldToPriorityTree(PriorityTree& tree) const {
@@ -417,6 +439,14 @@ void Application::addObjectsToPriorityTree(PriorityTree& tree) const {
             );
         }
     }
+
+    for (CannonPtr cannon : _cannons) {
+        SpritePtr sprite = cannon->getAnimation()->getSprite();
+        Position pos = cannon->getPosition();
+        Coordinate isometricCoord = _field->getSpriteCoord(pos);
+
+        tree.addSprite({ convertToSdlPoint(isometricCoord), sprite }, pos);
+    }
 }
 
 void Application::updateLevelState() {
@@ -430,11 +460,60 @@ void Application::updateLevelState() {
     }
 }
 
+void Application::addCannon(const Position& addPos, Direction direction) {
+    if (!_field->isWall(addPos)) {
+        return;
+    }
+
+    clock_t delayMs = rand() % (CANNON_DELAY_MS_MAX - CANNON_DELAY_MS_MIN + 1) + CANNON_DELAY_MS_MIN;
+    CannonPtr cannon = make_shared<Cannon>(_resourceManager.getAnimation("cannon"), delayMs);
+    cannon->setPosition(addPos);
+    cannon->setDirection(direction);
+    _cannons.push_back(cannon);
+}
+
+void Application::addFireball(const Position& addPos, Direction direction) {
+    FireballPtr fireball = make_shared<Fireball>(
+        _resourceManager.getAnimation("fireball"),
+        FIREBALL_SPEED
+    );
+    fireball->setDirection(direction);
+    
+    // шар появляется со смещением почти в половину плитки
+    float offsetValue = 0.45f * _field->getSquareSize();
+    Coordinate offsetCart;
+
+    switch (direction) {
+    case Direction::RIGHT:
+        offsetCart.x = offsetValue;
+        break;
+
+    case Direction::LEFT:
+        offsetCart.x = -offsetValue;
+        break;
+
+    case Direction::DOWN:
+        offsetCart.y = offsetValue;
+        break;
+
+    case Direction::UP:
+        offsetCart.y = -offsetValue;
+        break;
+    }
+
+    addObject(_field, fireball, addPos, offsetCart);
+    _objects.push_back(fireball);
+}
+
 void Application::addEnemy(const Position& addPos, const Position& p1, const Position& p2, Direction direction) {
+    if (!_field->isWalkable(addPos)) {
+        return;
+    }
+
     EnemyPtr enemy = make_shared<Enemy>(_resourceManager.getAnimation("enemy"), ENEMY_SPEED);
     enemy->setControlZone(ControlZone{ p1, p2 });
     enemy->setDirection(direction);
-    
+
     addObject(_field, enemy, addPos);
     _objects.push_back(enemy);
 }

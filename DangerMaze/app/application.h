@@ -12,6 +12,7 @@
 #include "../object/field.h"
 #include "../object/camera.h"
 #include "../object/player.h"
+#include "../object/cannon.h"
 #include "../object/dynamic_object.h"
 
 #include "../media/render_manager.h"
@@ -51,6 +52,8 @@ namespace app {
         void                        addMarkersToPriorityTree(PriorityTree& tree) const;
         void                        addObjectsToPriorityTree(PriorityTree& tree) const;
         void                        updateLevelState();
+        void                        addCannon(const object::Position& addPos, object::Direction direction);
+        void                        addFireball(const object::Position& addPos, object::Direction direction);
         void                        addEnemy(
                                         const object::Position& addPos,
                                         const object::Position& p1,
@@ -58,7 +61,8 @@ namespace app {
                                         object::Direction direction
                                     );
 
-        using Objects               = std::vector<object::IDynamicObjectPtr>;
+        using DynamicObjects        = std::vector<object::IDynamicObjectPtr>;
+        using Cannons               = std::vector<object::CannonPtr>;
 
         bool                        _running;
         bool                        _mouseControl;
@@ -71,14 +75,18 @@ namespace app {
         object::PlayerPtr           _player;
         object::Position            _finishPos;
         object::Position            _currentPos;
-        Objects                     _objects;
+        DynamicObjects              _objects;
+        Cannons                     _cannons;
         clock_t                     _lastUpdateTime;
 
         static const object::TileDescription    TILE_DESCRIPTION;
         static const SDL_Color                  BACKGROUND_COLOR;
         static const uint32_t                   FIELD_SIZE;
+        static const int                        CANNON_DELAY_MS_MIN;
+        static const int                        CANNON_DELAY_MS_MAX;
         static const float                      PLAYER_SPEED;
         static const float                      ENEMY_SPEED;
+        static const float                      FIREBALL_SPEED;
     };
 
     void                            loop(Application& application);
