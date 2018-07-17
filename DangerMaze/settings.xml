@@ -4,9 +4,4 @@
 	  <Size width="800" height="600"/>
 	  <Fullscreen value="0" />
   </Display>
-  <World>
-    <Size width="10" height="10"/>
-    <Enemies count="5"/>
-    <Cannons count="5"/>
-  </World>
 </Settings>
