@@ -46,10 +46,17 @@ namespace app {
         void                        handleLeftMouseButton() noexcept;
         void                        handleRightMouseButton() noexcept;
         void                        generateField(uint32_t width, uint32_t height);
+        void                        initializeObjects();
         void                        addFieldToPriorityTree(PriorityTree& tree) const;
         void                        addMarkersToPriorityTree(PriorityTree& tree) const;
         void                        addObjectsToPriorityTree(PriorityTree& tree) const;
         void                        updateLevelState();
+        void                        addEnemy(
+                                        const object::Position& addPos,
+                                        const object::Position& p1,
+                                        const object::Position& p2,
+                                        object::Direction direction
+                                    );
 
         using Objects               = std::vector<object::IDynamicObjectPtr>;
 
@@ -67,9 +74,11 @@ namespace app {
         Objects                     _objects;
         clock_t                     _lastUpdateTime;
 
-        static const SDL_Color                  BACKGROUND_COLOR;
         static const object::TileDescription    TILE_DESCRIPTION;
+        static const SDL_Color                  BACKGROUND_COLOR;
+        static const uint32_t                   FIELD_SIZE;
         static const float                      PLAYER_SPEED;
+        static const float                      ENEMY_SPEED;
     };
 
     void                            loop(Application& application);

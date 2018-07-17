@@ -1,11 +1,14 @@
 #include <utility>
 #include <iostream>
+#include <algorithm>
 
 #include "SDL_image.h"
 
 #include "simulation.h"
 #include "application.h"
 #include "path_searching.h"
+
+#include "../object/enemy.h"
 
 #define CHECK_SDL_RESULT(condition, functionName)                           \
 if (condition) {                                                            \
@@ -19,8 +22,6 @@ using namespace util;
 using namespace media;
 using namespace object;
 
-const SDL_Color Application::BACKGROUND_COLOR = { 155, 221, 255, 255 };
-
 const TileDescription Application::TILE_DESCRIPTION = {
     70, // spriteWidth
     81, // spriteHeight
@@ -30,7 +31,13 @@ const TileDescription Application::TILE_DESCRIPTION = {
     60  // tileY
 };
 
-const float Application::PLAYER_SPEED = 75.0f;
+const SDL_Color Application::BACKGROUND_COLOR = { 155, 221, 255, 255 };
+
+const uint32_t Application::FIELD_SIZE = 30;
+
+const float Application::PLAYER_SPEED = 90.0f;
+
+const float Application::ENEMY_SPEED = 125.0f;
 
 Application::Application() noexcept
     : _running(false)
@@ -66,13 +73,13 @@ bool Application::initialize(const string& title, const Settings& settings) {
         title.c_str(),
         SDL_WINDOWPOS_UNDEFINED,
         SDL_WINDOWPOS_UNDEFINED,
-        settings.display.width,
-        settings.display.height,
+        settings.displayWidth,
+        settings.displayHeight,
         SDL_WINDOW_SHOWN
     );
     CHECK_SDL_RESULT(_window == nullptr, "SDL_CreateWindow");
 
-    if (settings.display.fullscreen) {
+    if (settings.fullscreen) {
         SDL_SetWindowFullscreen(_window, SDL_WINDOW_FULLSCREEN_DESKTOP);
     }
 
@@ -86,24 +93,22 @@ bool Application::initialize(const string& title, const Settings& settings) {
     _resourceManager.loadSpriteFromDescription("sprites/text.xml", renderer);
     _resourceManager.loadSpriteFromDescription("sprites/markers.xml", renderer);
     _resourceManager.loadAnimationFromDescription("sprites/player.xml", renderer);
+    _resourceManager.loadAnimationFromDescription("sprites/enemy.xml", renderer);
 
-    generateField(settings.world.width, settings.world.height);
+    generateField(FIELD_SIZE, FIELD_SIZE);
 
     _camera = make_shared<Camera>(
-        settings.display.width,
-        settings.display.height,
-        generateVisibleRect(_field, settings.display.width, settings.display.height)
+        settings.displayWidth,
+        settings.displayHeight,
+        generateVisibleRect(_field, settings.displayWidth, settings.displayHeight)
     );
 
-    Position playerPos = { _field->getHeight() - 2, _field->getWidth() - 2 };
-    _player = make_shared<Player>(_resourceManager.getAnimation("player"), PLAYER_SPEED);
-    addObject(_field, _player, playerPos);
-    _objects.push_back(_player);
+    initializeObjects();
 
-    // новая позиция камеры, что бы указанная точка была по центру окна
+    Position playerPos = _player->getBeginPosition();
     SDL_Point cameraPosition = convertToSdlPoint( _field->getIsometricCoord(playerPos) );
-    cameraPosition.x -= settings.display.width / 2;
-    cameraPosition.y -= settings.display.height / 2;
+    cameraPosition.x -= settings.displayWidth / 2;
+    cameraPosition.y -= settings.displayHeight / 2;
     _camera->setPosition(cameraPosition);
 
     return true;
@@ -112,33 +117,16 @@ bool Application::initialize(const string& title, const Settings& settings) {
 void Application::update() {
     clock_t currentTime = clock();
     clock_t deltaTimeMs = currentTime - _lastUpdateTime;
+    if (deltaTimeMs > MS_MAX_SIMULATE) {
+        deltaTimeMs = MS_MAX_SIMULATE;
+    }
 
     for (size_t i = 0; i < _objects.size(); ++i) {
         IDynamicObjectPtr object = _objects[i];
-
-        if (object == nullptr) {
-            continue;
-        }
-
+        
         if (object->isAlive()) {
-            moveObject(object, _field, deltaTimeMs);
-
-            bool beforeMoveFlag = object->isMove();
             object->update();
-            bool afterMoveFlag = object->isMove();
-
-            // проверка стены спереди
-            if (!beforeMoveFlag && afterMoveFlag) {
-                Position forwardPos = object->getEndPosition();
-                if (_field->isWall(forwardPos)) {
-                    object->setMoveFlag(false);
-                    object->setEndPosition(object->getBeginPosition());
-
-                    if (object == _player) {
-                        _player->clearPath();
-                    }
-                }
-            }
+            moveObject(object, _field, deltaTimeMs);
         }
 
         // написано не через else, так как объект может умереть в условии выше
@@ -160,6 +148,12 @@ void Application::render() {
 
     addFieldToPriorityTree(priorityTree);
     addMarkersToPriorityTree(priorityTree);
+
+    sort(_objects.begin(), _objects.end(), [](IDynamicObjectPtr lhs, IDynamicObjectPtr rhs) {
+        Position leftPos = lhs->getBeginPosition();
+        Position rightPos = rhs->getBeginPosition();
+        return leftPos < rightPos;
+    });
     addObjectsToPriorityTree(priorityTree);
 
     _renderManager.setQueue(priorityTree.getSortedSprites());
@@ -315,6 +309,31 @@ void Application::generateField(uint32_t width, uint32_t height) {
     }
 }
 
+void Application::initializeObjects() {
+    Position playerPos = { _field->getHeight() - 2, _field->getWidth() - 2 };
+    _player = make_shared<Player>(_resourceManager.getAnimation("player"), PLAYER_SPEED);
+    _objects.push_back(_player);
+    addObject(_field, _player, playerPos);
+
+    addEnemy({ 1, 4 }, { 1, 4 }, { 28, 4 }, Direction::DOWN);
+    addEnemy({ 28, 4 }, { 1, 4 }, { 28, 4 }, Direction::UP);
+
+    addEnemy({ 1, 25 }, { 1, 25 }, { 28, 25 }, Direction::DOWN);
+    addEnemy({ 28, 25 }, { 1, 25 }, { 28, 25 }, Direction::UP);
+
+    addEnemy({ 4, 1 }, { 4, 1 }, { 4, 14 }, Direction::RIGHT);
+    addEnemy({ 4, 28 }, { 4, 15 }, { 4, 28 }, Direction::LEFT);
+
+    addEnemy({ 11, 11 }, { 11, 11 }, { 11, 18 }, Direction::RIGHT);
+    addEnemy({ 11, 18 }, { 11, 18 }, { 18, 18 }, Direction::DOWN);
+    addEnemy({ 18, 18 }, { 18, 11 }, { 18, 18 }, Direction::LEFT);
+    addEnemy({ 18, 11 }, { 11, 11 }, { 18, 11 }, Direction::UP);
+
+    addEnemy({ 25, 26 }, { 25, 26 }, { 25, 28 }, Direction::RIGHT);
+    addEnemy({ 23, 28 }, { 23, 26 }, { 23, 28 }, Direction::LEFT);
+    addEnemy({ 21, 26 }, { 21, 26 }, { 21, 28 }, Direction::RIGHT);
+}
+
 void Application::addFieldToPriorityTree(PriorityTree& tree) const {
     const TileMatrix& tiles = _field->getTiles();
     int width = _field->getWidth();
@@ -351,9 +370,11 @@ void Application::addMarkersToPriorityTree(PriorityTree& tree) const {
         );
     }
 
-    if (_player->isMove()) {
+    if (_player->isAlive()) {
         deque<Direction> path = _player->getPath();
-        path.push_front( _player->getDirection() );
+        if (_player->isMove()) {
+            path.push_front(_player->getDirection());
+        }
 
         SpritePtr pointSprite = _resourceManager.getSprite("point");
         Position currentPos = _player->getBeginPosition();
@@ -361,6 +382,10 @@ void Application::addMarkersToPriorityTree(PriorityTree& tree) const {
         for (Direction dir : path) {
             currentPos = nextPosition(currentPos, dir);
             
+            if (!_field->isWalkable(currentPos)) {
+                break;
+            }
+
             Coordinate addCoord = _field->getSpriteCoord(currentPos);
 
             tree.addSprite(
@@ -403,6 +428,15 @@ void Application::updateLevelState() {
             _state = LevelState::COMPLETED;
         }
     }
+}
+
+void Application::addEnemy(const Position& addPos, const Position& p1, const Position& p2, Direction direction) {
+    EnemyPtr enemy = make_shared<Enemy>(_resourceManager.getAnimation("enemy"), ENEMY_SPEED);
+    enemy->setControlZone(ControlZone{ p1, p2 });
+    enemy->setDirection(direction);
+    
+    addObject(_field, enemy, addPos);
+    _objects.push_back(enemy);
 }
 
 void app::loop(Application& app) {
