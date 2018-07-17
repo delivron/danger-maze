@@ -28,16 +28,12 @@ Position IDynamicObject::getBeginPosition() const noexcept {
     return _beginPosition;
 }
 
-void IDynamicObject::setBeginPosition(const Position& position) noexcept {
-    _beginPosition = position;
-}
-
 Position IDynamicObject::getEndPosition() const noexcept {
     return _endPosition;
 }
 
-void IDynamicObject::setEndPosition(const Position& position) noexcept {
-    _endPosition = position;
+void IDynamicObject::setPosition(const Position& position) noexcept {
+    _beginPosition = _endPosition = position;
 }
 
 Coordinate IDynamicObject::getCartesianCoord() const noexcept {
@@ -53,7 +49,6 @@ Direction IDynamicObject::getDirection() const noexcept {
 }
 
 void IDynamicObject::setDirection(Direction direction) noexcept {
-    setEndPosition( nextPosition(_beginPosition, direction) );
     _direction = direction;
 }
 
@@ -85,8 +80,21 @@ AnimationPtr IDynamicObject::getAnimation() const noexcept {
     return _animation;
 }
 
-void IDynamicObject::update() {
-    if (_animation != nullptr) {
-        _animation->update();
-    }
+void IDynamicObject::startMotion(Direction direction) {
+    setDirection(direction);
+    _endPosition = nextPosition(_beginPosition, direction);
+    _moveFlag = true;
+}
+
+void IDynamicObject::finishMotion() {
+    _beginPosition = _endPosition;
+    _moveFlag = false;
+}
+
+void IDynamicObject::resetMotion() {
+    _endPosition = _beginPosition;
+    _moveFlag = false;
+}
+
+void IDynamicObject::onHitWithObject(Fraction) {
 }

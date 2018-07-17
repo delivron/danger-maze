@@ -22,9 +22,8 @@ namespace object {
 
         Fraction                    getFraction() const noexcept;
         Position                    getBeginPosition() const noexcept;
-        void                        setBeginPosition(const Position& position) noexcept;
         Position                    getEndPosition() const noexcept;
-        void                        setEndPosition(const Position& position) noexcept;
+        void                        setPosition(const Position& position) noexcept;
         util::Coordinate            getCartesianCoord() const noexcept;
         void                        setCartesianCoord(const util::Coordinate& cartesianPosition) noexcept;
         Direction                   getDirection() const noexcept;
@@ -36,7 +35,12 @@ namespace object {
         bool                        isMove() const noexcept;
         void                        setMoveFlag(bool moveFlag);
         media::AnimationPtr         getAnimation() const noexcept;
+        void                        startMotion(Direction direction);
+        void                        finishMotion();
+        void                        resetMotion();
         virtual void                update() = 0;
+        virtual void                onHitWithBarrier() = 0;
+        virtual void                onHitWithObject(Fraction objectFraction);
 
     protected:
         Fraction                    _fraction;
