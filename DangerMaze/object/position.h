@@ -9,6 +9,10 @@ namespace object {
         LEFT                        = 3,
     };
 
+    bool                            isHorizontalDirection(Direction dir);
+    bool                            isVerticalDirection(Direction dir);
+    Direction                       invertDirection(Direction dir);
+
     struct Position {
         int                         row                 = -1;
         int                         column              = -1;
@@ -16,6 +20,7 @@ namespace object {
 
     bool operator==(const Position& lhs, const Position& rhs);
     bool operator!=(const Position& lhs, const Position& rhs);
+    bool operator<(const Position& lhs, const Position& rhs);
 
     Position nextPosition(Position position, Direction direction);
 
