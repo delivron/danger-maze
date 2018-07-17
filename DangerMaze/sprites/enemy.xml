@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TextureAtlas image-path="sprites/enemy.png">
+  <Sprite name="enemy_down" x="1" y="1" w="70" h="81"/>
+  <Sprite name="enemy_right" x="72" y="1" w="70" h="81"/>
+  <Sprite name="enemy_up" x="143" y="1" w="70" h="81"/>
+  <Sprite name="enemy_left" x="214" y="1" w="70" h="81"/>
+</TextureAtlas>
