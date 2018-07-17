@@ -30,11 +30,15 @@
     <ClCompile Include="media\resource_manager.cpp" />
     <ClCompile Include="media\sprite.cpp" />
     <ClCompile Include="object\camera.cpp" />
+    <ClCompile Include="object\cannon.cpp" />
     <ClCompile Include="object\dynamic_object.cpp" />
+    <ClCompile Include="object\enemy.cpp" />
     <ClCompile Include="object\field.cpp" />
+    <ClCompile Include="object\fireball.cpp" />
     <ClCompile Include="object\hero.cpp" />
     <ClCompile Include="object\player.cpp" />
     <ClCompile Include="object\position.cpp" />
+    <ClCompile Include="object\static_object.cpp" />
     <ClCompile Include="util\transformation.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -48,12 +52,15 @@
     <ClInclude Include="media\resource_manager.h" />
     <ClInclude Include="media\sprite.h" />
     <ClInclude Include="object\camera.h" />
+    <ClInclude Include="object\cannon.h" />
     <ClInclude Include="object\dynamic_object.h" />
+    <ClInclude Include="object\enemy.h" />
     <ClInclude Include="object\fireball.h" />
     <ClInclude Include="object\field.h" />
     <ClInclude Include="object\hero.h" />
     <ClInclude Include="object\player.h" />
     <ClInclude Include="object\position.h" />
+    <ClInclude Include="object\static_object.h" />
     <ClInclude Include="util\transformation.h" />
     <ClInclude Include="util\xml_attribute.h" />
   </ItemGroup>
@@ -61,8 +68,16 @@
     <Xml Include="settings.xml">
       <SubType>Designer</SubType>
     </Xml>
+    <Xml Include="sprites\markers.xml" />
     <Xml Include="sprites\player.xml" />
+    <Xml Include="sprites\text.xml" />
     <Xml Include="sprites\tiles.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="sprites\markers.png" />
+    <Image Include="sprites\player.png" />
+    <Image Include="sprites\text.png" />
+    <Image Include="sprites\tiles.png" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

@@ -96,6 +96,15 @@
     <ClCompile Include="object\enemy.cpp">
       <Filter>Исходные файлы\object</Filter>
     </ClCompile>
+    <ClCompile Include="object\static_object.cpp">
+      <Filter>Исходные файлы\object</Filter>
+    </ClCompile>
+    <ClCompile Include="object\cannon.cpp">
+      <Filter>Исходные файлы\object</Filter>
+    </ClCompile>
+    <ClCompile Include="object\fireball.cpp">
+      <Filter>Исходные файлы\object</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="app\application.h">
@@ -153,6 +162,12 @@
       <Filter>Файлы заголовков\app</Filter>
     </ClInclude>
     <ClInclude Include="object\enemy.h">
+      <Filter>Файлы заголовков\object</Filter>
+    </ClInclude>
+    <ClInclude Include="object\cannon.h">
+      <Filter>Файлы заголовков\object</Filter>
+    </ClInclude>
+    <ClInclude Include="object\static_object.h">
       <Filter>Файлы заголовков\object</Filter>
     </ClInclude>
   </ItemGroup>
